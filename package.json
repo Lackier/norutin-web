@@ -1,0 +1,9 @@
+{
+  "name": "norutin-web",
+  "version": "0.0.0",
+  "description": "norutin-web",
+  "main": "server.js",
+  "author": {
+    "name": ""
+  }
+}
