@@ -2,6 +2,7 @@ import React, { useState } from "react"
 import { Card, Button, Alert } from "react-bootstrap"
 import { useAuth } from "../contexts/AuthContext"
 import { Link, useHistory } from "react-router-dom"
+import $ from "jquery";
 
 export default function Dashboard() {
     const [error, setError] = useState("")
@@ -13,6 +14,7 @@ export default function Dashboard() {
 
         try {
             await logout()
+            await localStorage.setItem('token', null)
             history.push("/login")
         } catch {
             setError("Failed to log out")

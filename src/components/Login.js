@@ -9,6 +9,7 @@ export default function Login() {
     const { login } = useAuth()
     const [error, setError] = useState("")
     const [loading, setLoading] = useState(false)
+    const [token, setToken] = useState(null)
     const history = useHistory()
 
     async function handleSubmit(e) {
@@ -18,7 +19,13 @@ export default function Login() {
             setError("")
             setLoading(true)
             await login(emailRef.current.value, passwordRef.current.value)
-            history.push("/")
+                .then(async res => {
+                    const token = await Object.entries(res.user)[5][1].b
+                    await localStorage.setItem('token', token)
+                    setToken(window.localStorage.token)
+
+                    history.push("/")
+            })
         } catch {
             setError("Failed to log in")
         }

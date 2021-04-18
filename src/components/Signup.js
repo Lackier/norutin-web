@@ -1,6 +1,5 @@
 import React, { useRef, useState } from "react"
 import { Form, Button, Card, Alert } from "react-bootstrap"
-import { useAuth } from "../contexts/AuthContext"
 import { Link, useHistory } from "react-router-dom"
 import $ from 'jquery';
 
@@ -8,7 +7,6 @@ export default function Signup() {
     const emailRef = useRef()
     const passwordRef = useRef()
     const passwordConfirmRef = useRef()
-    const { login } = useAuth()
     const [error, setError] = useState("")
     const [loading, setLoading] = useState(false)
     const history = useHistory()
@@ -33,13 +31,13 @@ export default function Signup() {
                 },
                 type: "Post",
                 data: {
-                    "email": emailRef.current.value,
-                    "password": passwordRef.current.value,
+                    "email": email,
+                    "password": password,
                     "phoneNumber": "+77777777778",
                     "name": "aaaaaab_user"
                 },
                 success: function (result) {
-                    _login()
+
                 },
                 error: function (error) {
                     console.log('Error ' + error)
@@ -54,10 +52,6 @@ export default function Signup() {
         }
 
         setLoading(false)
-    }
-
-    async function _login() {
-        await login(email, password)
     }
 
     return (
