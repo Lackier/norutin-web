@@ -7,12 +7,13 @@ import Dashboard from "./Dashboard"
 import Login from "./Login"
 import DeskList from "./DeskList";
 import PrivateRoute from "./PrivateRoute"
+import 'rsuite/dist/styles/rsuite-dark-rtl.css'
 
 
 function App() {
     return (
         <Container>
-            <div className="w-100" style={{ maxWidth: "400px" }}>
+            <div className="w-100">
                 <Router>
                     <AuthProvider>
                         <Switch>
