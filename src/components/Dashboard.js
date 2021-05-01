@@ -1,12 +1,13 @@
-import React, { useState } from "react"
-import { Card, Button, Alert } from "react-bootstrap"
-import { useAuth } from "../contexts/AuthContext"
-import { Link, useHistory } from "react-router-dom"
+import React, {useState} from "react"
+import {Card, Button, Alert} from "react-bootstrap"
+import {useAuth} from "../contexts/AuthContext"
+import {Link, useHistory} from "react-router-dom"
 import $ from "jquery";
 
 export default function Dashboard() {
     const [error, setError] = useState("")
-    const { currentUser, logout } = useAuth()
+    const [loading, setLoading] = useState(false)
+    const {currentUser, logout} = useAuth()
     const history = useHistory()
 
     async function handleLogout() {
@@ -21,6 +22,32 @@ export default function Dashboard() {
         }
     }
 
+    async function getDesks() {
+        setError("")
+
+        try {
+            const url = "http://127.0.0.1:8080/api/desks"
+            $.ajax({
+                url: url,
+                headers: {
+                    'Access-Control-Allow-Origin': '*',
+                    'firebase_token': localStorage.token
+                },
+                type: "Get",
+                success: function (result) {
+                    setError("")
+                    setLoading(true)
+                    history.push("/deskList", result)
+                },
+                error: function (error) {
+                    console.log('Error ' + error)
+                }
+            })
+        } catch {
+            setError("Failed to get Desks")
+        }
+    }
+
     return (
         <>
             <Card>
@@ -30,13 +57,18 @@ export default function Dashboard() {
                     <strong>Email:</strong> {currentUser.email}
                     <Link to="/update-profile" className="btn btn-primary w-100 mt-3">
                         Update Profile
-          </Link>
+                    </Link>
                 </Card.Body>
             </Card>
             <div className="w-100 text-center mt-2">
                 <Button variant="link" onClick={handleLogout}>
                     Log Out
-        </Button>
+                </Button>
+            </div>
+            <div className="w-100 text-center mt-2">
+                <Button variant="link" onClick={getDesks}>
+                    Desks
+                </Button>
             </div>
         </>
     )
