@@ -14,23 +14,31 @@ export default function Signup() {
     const nameRef = useRef()
     const passwordRef = useRef()
     const passwordConfirmRef = useRef()
+    const {login} = useAuth()
+    const [token, setToken] = useState(null)
     const [phoneNumberRef, setPhoneNumber] = useState()
     const [error, setError] = useState("")
     const [loading, setLoading] = useState(false)
     const history = useHistory()
-    let name, phoneNumber, email, password
+    let model = {name: "", phoneNumber: "", email: "", password: ""}
 
-    async function handleSubmit(e) {
-        e.preventDefault()
+    function setModel() {
+        model.name = nameRef.current.value
+        model.phoneNumber = phoneNumberRef
+        model.email = emailRef.current.value
+        model.password = passwordRef.current.value
+    }
 
+    async function handleSubmit() {
         if (passwordRef.current.value !== passwordConfirmRef.current.value) {
             return setError("Passwords do not match")
         }
 
-        name = nameRef.current.value
-        phoneNumber = phoneNumberRef
-        email = emailRef.current.value
-        password = passwordRef.current.value
+        setModel()
+        if (model.name === "" || model.phoneNumber === "" || model.email === "" || model.password === "") {
+            setLoading(false)
+            return
+        }
 
         try {
             const url = "http://127.0.0.1:8080/api/users/signup"
@@ -41,13 +49,13 @@ export default function Signup() {
                 },
                 type: "Post",
                 data: {
-                    "name": name,
-                    "phoneNumber": phoneNumber,
-                    "email": email,
-                    "password": password
+                    "name": model.name,
+                    "phoneNumber": model.phoneNumber,
+                    "email": model.email,
+                    "password": model.password
                 },
-                success: function (result) {
-
+                success: async function () {
+                    await toLogin()
                 },
                 error: function (error) {
                     console.log('Error ' + error)
@@ -62,6 +70,16 @@ export default function Signup() {
         }
 
         setLoading(false)
+    }
+
+    async function toLogin() {
+        await login(model.email, model.password)
+            .then(async res => {
+                const token = await Object.entries(res.user)[5][1].b
+                await localStorage.setItem('token', token)
+                setToken(window.localStorage.token)
+                history.push("/")
+            })
     }
 
     return (

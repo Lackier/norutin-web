@@ -11,14 +11,17 @@ import '../styles/auth_styles.css'
 export default function Login() {
     const emailRef = useRef()
     const passwordRef = useRef()
-    const login = useAuth()
+    const {login} = useAuth()
     const [error, setError] = useState("")
     const [loading, setLoading] = useState(false)
     const [token, setToken] = useState(null)
     const history = useHistory()
 
-    async function handleSubmit(e) {
-        e.preventDefault()
+    async function handleSubmit() {
+        if (emailRef.current.value === "" || passwordRef.current.value === "") {
+            setLoading(false)
+            return
+        }
 
         try {
             setError("")
@@ -28,7 +31,6 @@ export default function Login() {
                     const token = await Object.entries(res.user)[5][1].b
                     await localStorage.setItem('token', token)
                     setToken(window.localStorage.token)
-
                     history.push("/")
                 })
         } catch {
