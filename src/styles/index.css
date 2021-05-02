@@ -19,7 +19,6 @@ h1, h2, h3, h4, h5, h6, label, span {
 
 body, html, .App, #root, .auth-wrapper {
     width: 100%;
-    height: 100%;
 }
 
 .navbar-light {
@@ -71,4 +70,17 @@ body, html, .App, #root, .auth-wrapper {
 
 .forgot-password a {
     color: #167bff;
+}
+
+.desk {
+    padding: 3px 37px 3px 37px;
+    border-radius: 8px;
+    transition: all .3s;
+    background-color: #ffffff;
+    border: 1px solid #167bff;
+    flex: 1;
+}
+
+.w-12 {
+    width: 12.5%;
 }

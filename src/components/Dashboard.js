@@ -36,7 +36,6 @@ export default function Dashboard() {
                 type: "Get",
                 success: function (result) {
                     setError("")
-                    setLoading(true)
                     history.push("/desks", result)
                 },
                 error: function (error) {
