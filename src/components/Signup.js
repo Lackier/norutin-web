@@ -1,13 +1,10 @@
 import React, {useRef, useState} from "react"
-import {
-    Form, FormGroup, FormControl, ControlLabel, Button, Alert, Panel,
-    Container, Header, Navbar, Content, FlexboxGrid, ButtonToolbar
-} from 'rsuite'
+import {Form, Button, Alert, ButtonGroup} from "react-bootstrap"
+import PhoneInput from 'react-phone-number-input/input'
 import {Link, useHistory} from "react-router-dom"
 import $ from 'jquery';
-import PhoneInput from 'react-phone-number-input/input'
-import 'rsuite/dist/styles/rsuite-dark-rtl.css'
-import '../styles/auth_styles.css'
+import "../styles/index.css";
+import {useAuth} from "../contexts/AuthContext";
 
 export default function Signup() {
     const emailRef = useRef()
@@ -83,70 +80,51 @@ export default function Signup() {
     }
 
     return (
-        <div>
-            <Container>
-                <Header>
-                    <Navbar appearance="inverse">
-                        <Navbar.Header>
-                            <a className="navbar-brand logo">NORUTIN</a>
-                        </Navbar.Header>
-                    </Navbar>
-                </Header>
-                <Content>
-                    <FlexboxGrid justify="center">
-                        <FlexboxGrid.Item colspan={5}>
-                            <Panel header={<h3>Sign Up</h3>} bordered>
-                                {error && <Alert variant="danger">{error}</Alert>}
-                                <Form onSubmit={handleSubmit} fluid>
-                                    <FormGroup id="name">
-                                        <ControlLabel>Name</ControlLabel>
-                                        <FormControl type="text" ref={nameRef} required/>
-                                    </FormGroup>
+        <>
+            <h2 className="text-center mb-4">Sign Up</h2>
+            {error && <Alert variant="danger">{error}</Alert>}
+            <Form onSubmit={handleSubmit}>
+                <Form.Group id="name" className="form-group">
+                    <Form.Label>Name</Form.Label>
+                    <Form.Control type="text" ref={nameRef} required/>
+                </Form.Group>
 
-                                    <FormGroup id="phoneNumber">
-                                        <ControlLabel>Phone Number</ControlLabel>
-                                        <PhoneInput international defaultCountry="RU" required
-                                                    placeholder="Enter phone number" value={phoneNumberRef}
-                                                    onChange={setPhoneNumber} className="dark_field"/>
-                                    </FormGroup>
+                <Form.Group id="phoneNumber" className="form-group">
+                    <Form.Label>Phone Number</Form.Label>
+                    <PhoneInput international
+                                defaultCountry="RU"
+                                placeholder="Enter phone number"
+                                className="input-group-text form-group"
+                                value={phoneNumberRef}
+                                required
+                                onChange={setPhoneNumber}/>
+                </Form.Group>
 
-                                    <FormGroup id="email">
-                                        <ControlLabel>Email</ControlLabel>
-                                        <FormControl type="email" ref={emailRef} required/>
-                                    </FormGroup>
+                <Form.Group id="email" className="form-group">
+                    <Form.Label>Email</Form.Label>
+                    <Form.Control type="email" ref={emailRef} required/>
+                </Form.Group>
 
-                                    <FormGroup id="password">
-                                        <ControlLabel>Password</ControlLabel>
-                                        <FormControl type="password" ref={passwordRef} required/>
-                                    </FormGroup>
+                <Form.Group id="password" className="form-group">
+                    <Form.Label>Password</Form.Label>
+                    <Form.Control type="password" ref={passwordRef} required/>
+                </Form.Group>
 
-                                    <FormGroup id="password-confirm">
-                                        <ControlLabel>Password Confirmation</ControlLabel>
-                                        <FormControl type="password" ref={passwordConfirmRef} required/>
-                                    </FormGroup>
+                <Form.Group id="password-confirm" className="form-group">
+                    <Form.Label>Password Confirmation</Form.Label>
+                    <Form.Control type="password" ref={passwordConfirmRef} required/>
+                </Form.Group>
 
-                                    <FormGroup>
-                                        <ButtonToolbar>
-                                            <Button disabled={loading} className="button_big button_center"
-                                                    type="submit" appearance="primary">
-                                                Sign Up
-                                            </Button>
-                                        </ButtonToolbar>
-                                    </FormGroup>
-                                    <FormGroup>
-                                        <ButtonToolbar>
-                                            Already have an account?
-                                            <Button className="button_center" appearance="secondary">
-                                                <Link to="/login">Log In</Link>
-                                            </Button>
-                                        </ButtonToolbar>
-                                    </FormGroup>
-                                </Form>
-                            </Panel>
-                        </FlexboxGrid.Item>
-                    </FlexboxGrid>
-                </Content>
-            </Container>
-        </div>
+                <ButtonGroup className="w-100 text-center mt-3">
+                    <Button disabled={loading} className="w-100 btn btn-primary btn-block" type="submit">
+                        Sign Up
+                    </Button>
+                </ButtonGroup>
+            </Form>
+            <div className="w-100 text-center mt-2">
+                Already have an account?
+                <Link className="btn btn-secondary btn-block right-corner w-25 ms-4" to="/login">Sign In</Link>
+            </div>
+        </>
     )
 }

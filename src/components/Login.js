@@ -1,12 +1,8 @@
 import React, {useRef, useState} from "react"
+import {Alert, Button, ButtonGroup, Form} from "react-bootstrap"
 import {useAuth} from "../contexts/AuthContext"
 import {Link, useHistory} from "react-router-dom"
-import {
-    Form, FormGroup, FormControl, ControlLabel, Button, Alert, HelpBlock, Panel,
-    Container, Header, Navbar, Content, FlexboxGrid, ButtonToolbar
-    } from 'rsuite'
-import 'rsuite/dist/styles/rsuite-dark-rtl.css'
-import '../styles/auth_styles.css'
+import "../styles/index.css";
 
 export default function Login() {
     const emailRef = useRef()
@@ -41,55 +37,38 @@ export default function Login() {
     }
 
     return (
-        <div className="show-fake-browser login-page">
-            <Container>
-                <Header>
-                    <Navbar appearance="inverse">
-                        <Navbar.Header>
-                            <a className="navbar-brand logo">NORUTIN</a>
-                        </Navbar.Header>
-                    </Navbar>
-                </Header>
-                <Content>
-                    <FlexboxGrid justify="center">
-                        <FlexboxGrid.Item colspan={5}>
-                            <Panel header={<h3>Login</h3>} bordered>
-                                {error && <Alert variant="danger">{error}</Alert>}
-                                <Form onSubmit={handleSubmit} fluid>
-                                    <FormGroup id="email">
-                                        <ControlLabel>Email</ControlLabel>
-                                        <FormControl type="email" ref={emailRef} required/>
-                                        <HelpBlock>This field is required</HelpBlock>
-                                    </FormGroup>
-                                    <FormGroup id="password">
-                                        <ControlLabel>Password</ControlLabel>
-                                        <FormControl type="password" ref={passwordRef} required/>
-                                        <HelpBlock>This field is required</HelpBlock>
-                                    </FormGroup>
-                                    <FormGroup>
-                                        <ButtonToolbar>
-                                            <Button disabled={loading} appearance="primary" type="submit"
-                                                    className="button_big button_center">
-                                                Log In
-                                            </Button>
-                                        </ButtonToolbar>
-                                    </FormGroup>
-                                    <FormGroup>
-                                        <ButtonToolbar>
-                                            <Button appearance="link" className="button_medium button_left">
-                                                <Link to="/forgot-password">Forgot Password?</Link>
-                                            </Button>
-                                            <Button appearance="secondary" className="button_medium button_right">
-                                                <Link to="/signup">Sign Up</Link>
-                                            </Button>
-                                        </ButtonToolbar>
-                                    </FormGroup>
-                                </Form>
-                            </Panel>
-                        </FlexboxGrid.Item>
-                    </FlexboxGrid>
-                </Content>
-            </Container>
-        </div>
+        <Form>
+            <h3>Sign In</h3>
+            {error && <Alert variant="danger">{error}</Alert>}
+            <Form onSubmit={handleSubmit}>
+                <Form.Group id="email" className="form-group">
+                    <Form.Label>Email</Form.Label>
+                    <Form.Control type="email" ref={emailRef} required/>
+                </Form.Group>
+
+                <Form.Group id="password" className="form-group">
+                    <Form.Label>Password</Form.Label>
+                    <Form.Control type="password" ref={passwordRef} required/>
+                </Form.Group>
+
+                <ButtonGroup className="w-100 text-center mt-3">
+                    <Button disabled={loading} className="btn btn-primary btn-block" type="submit"
+                            onClick={handleSubmit}>
+                        Log In
+                    </Button>
+
+                    <div className="btn btn-block">
+                        <Link to="/forgot-password">Forgot Password?</Link>
+                    </div>
+                </ButtonGroup>
+            </Form>
+
+            <div className="w-100 text-center mt-2">
+                Need an account?
+                <Link to="/signup" className="btn btn-secondary btn-block right-corner w-25 ms-4">
+                    Sign Up
+                </Link>
+            </div>
+        </Form>
     )
 }
