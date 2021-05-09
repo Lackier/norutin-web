@@ -6,7 +6,7 @@ import $ from "jquery";
 
 export default function Dashboard() {
     const [error, setError] = useState("")
-    const [setLoading] = useState(false)
+    const [loading, setLoading] = useState(false)
     const {currentUser, logout} = useAuth()
     const history = useHistory()
 
@@ -26,6 +26,7 @@ export default function Dashboard() {
         setError("")
 
         try {
+            setLoading(true)
             const url = "http://127.0.0.1:8080/api/desks"
             $.ajax({
                 url: url,
@@ -45,10 +46,11 @@ export default function Dashboard() {
         } catch {
             setError("Failed to get Desks")
         }
+        setLoading(false)
     }
 
     return (
-        <>
+        <div className="mt-5">
             <h2 className="text-center mb-4">Profile</h2>
             {error && <Alert variant="danger">{error}</Alert>}
             <strong>Email:</strong> {currentUser.email}
@@ -65,6 +67,6 @@ export default function Dashboard() {
                     Desks
                 </Button>
             </div>
-        </>
+        </div>
     )
 }
