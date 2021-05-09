@@ -37,8 +37,8 @@ export default function Login() {
     }
 
     return (
-        <Form>
-            <h3>Sign In</h3>
+        <Form className="mt-5">
+            <h2 className="text-center mb-4">Sign In</h2>
             {error && <Alert variant="danger">{error}</Alert>}
             <Form onSubmit={handleSubmit}>
                 <Form.Group id="email" className="form-group">
