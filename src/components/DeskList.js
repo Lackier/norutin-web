@@ -15,19 +15,29 @@ export default function DeskList() {
     const location = useLocation()
     let desks = location.state
 
+    let deskForCreate = {
+        deskName: useRef(),
+        userId: useRef(),
+        fillDefaultSettings: useRef(),
+
+        clearDeskForCreate() {
+            this.deskName.current.value = ''
+            this.userId.current.value = ''
+            this.fillDefaultSettings.current.checked = false
+        }
+    }
+
     let deskForEdit = {
         id: useRef(),
         deskName: useRef(),
         createDate: useRef(),
         userId: useRef(),
-        fillDefaultSettings: useRef(),
 
         clearDeskForEdit() {
             this.id.current.value = ''
             this.deskName.current.value = ''
             this.createDate.current.value = ''
             this.userId.current.value = ''
-            this.fillDefaultSettings.current.checked = false
         },
 
         fillFromResult(desk) {
@@ -44,6 +54,7 @@ export default function DeskList() {
 
     function createDeskModal() {
         deskForEdit.clearDeskForEdit()
+        deskForCreate.clearDeskForCreate()
         setModalCreateActive(true)
     }
 
@@ -89,8 +100,8 @@ export default function DeskList() {
                 },
                 type: "Post",
                 data: {
-                    "name": deskForEdit.deskName.current.value,
-                    "fillDefaultSettings": deskForEdit.fillDefaultSettings.current.checked
+                    "name": deskForCreate.deskName.current.value,
+                    "fillDefaultSettings": deskForCreate.fillDefaultSettings.current.checked
                 },
                 success: async function (result) {
                     setError("")
@@ -258,16 +269,16 @@ export default function DeskList() {
 
             <SimpleModal active={modalCreateActive} setActive={setModalCreateActive}>
                 <Form>
-                    <div ref={deskForEdit.id} hidden="true"/>
-                    <div ref={deskForEdit.userId} hidden="true"/>
+                    <div ref={deskForCreate.id} hidden="true"/>
+                    <div ref={deskForCreate.userId} hidden="true"/>
                     <Form.Group id="name" className="form-group">
                         <Form.Label>Name</Form.Label>
-                        <Form.Control type="text" required ref={deskForEdit.deskName}/>
+                        <Form.Control type="text" required ref={deskForCreate.deskName}/>
                     </Form.Group>
 
                     <Form.Group id="defaultSettings" className="form-group">
                         <Form.Label>Fill default settings</Form.Label>
-                        <FormCheck required ref={deskForEdit.fillDefaultSettings}/>
+                        <FormCheck required ref={deskForCreate.fillDefaultSettings}/>
                     </Form.Group>
 
                     <ButtonGroup className="w-40 text-center mt-3">
