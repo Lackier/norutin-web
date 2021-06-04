@@ -49,7 +49,33 @@ export default function DeskList() {
     }
 
     async function openDesk(id) {
-        debugger
+        setError("")
+
+        try {
+            setLoading(true)
+            const url = "http://127.0.0.1:8080/api/tasks"
+            $.ajax({
+                url: url,
+                headers: {
+                    'Access-Control-Allow-Origin': '*',
+                    'firebase_token': localStorage.token
+                },
+                type: "Get",
+                data: {
+                    "deskId": id
+                },
+                success: function (result) {
+                    setError("")
+                    history.push("/tasks", result)
+                },
+                error: function (error) {
+                    console.log('Error ' + error)
+                }
+            })
+        } catch {
+            setError("Failed to get Desks")
+        }
+        setLoading(false)
     }
 
     function createDeskModal() {
