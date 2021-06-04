@@ -56,10 +56,6 @@ export default function Login() {
                             onClick={handleSubmit}>
                         Log In
                     </Button>
-
-                    <div className="btn btn-block">
-                        <Link to="/forgot-password">Forgot Password?</Link>
-                    </div>
                 </ButtonGroup>
             </Form>
 
