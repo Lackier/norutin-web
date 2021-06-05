@@ -37,7 +37,7 @@ export default function Login() {
     }
 
     return (
-        <Form className="mt-5">
+        <Form className="auth-inner">
             <h2 className="text-center mb-4">Sign In</h2>
             {error && <Alert variant="danger">{error}</Alert>}
             <Form onSubmit={handleSubmit}>
