@@ -1,8 +1,8 @@
 import '../styles/index.css'
-import React from "react";
-import {Alert, Button, Card, CardGroup, Container, Form} from "react-bootstrap";
-import ModalCloseOrSave from '../ui-elements/modal/ModalCloseOrSave.js';
-import $ from "jquery";
+import React from "react"
+import {Alert, Button, Card, CardGroup, Container, Form} from "react-bootstrap"
+import ModalCloseOrSave from '../ui-elements/modal/ModalCloseOrSave.js'
+import $ from "jquery"
 
 export default class Desk extends React.Component {
     constructor(props) {
@@ -12,8 +12,10 @@ export default class Desk extends React.Component {
         this.deskId = props.location.search.split("?deskId=")[1]
         this.state = {
             modalCreateActive: false,
+            statuses: [],
             statusColumns: [],
-            statuses: []
+            tasks: [],
+            taskColumns: []
         }
         this.showModal = this.showModal.bind(this)
         this.hideModal = this.hideModal.bind(this)
@@ -29,11 +31,19 @@ export default class Desk extends React.Component {
     }
 
     setStatuses(statuses) {
-        this.setState( {statuses: statuses})
+        this.setState({statuses: statuses})
     }
 
     setStatusColumns(statusColumns) {
-        this.setState( {statusColumns: statusColumns})
+        this.setState({statusColumns: statusColumns})
+    }
+
+    setTasks(tasks) {
+        this.setState({tasks: tasks})
+    }
+
+    setTaskColumns(taskColumns) {
+        this.setState({taskColumns: taskColumns})
     }
 
     loadPage(deskId) {
@@ -57,8 +67,27 @@ export default class Desk extends React.Component {
             this.setStatusColumns(statusColumns)
             this.setStatuses(statuses)
         })
+    }
 
-        /*this.loadTasks(deskId)*/
+    tasksOfStatus(deskId, statusId) {
+        const tasks = []
+        const taskColumns = []
+
+        this.loadTasksByStatus(deskId, statusId).then(output => {
+            output.forEach(task => {
+                const taskRow =
+                    <Card className="w-150-250">
+                        <Card.Body>
+                            <span className="text-center">{task.name}</span>
+                            <hr/>
+                        </Card.Body>
+                    </Card>
+                taskColumns.push(taskRow)
+                tasks.push(task)
+            })
+            this.setTaskColumns(taskColumns)
+            this.setTasks(tasks)
+        })
     }
 
     loadStatuses(deskId) {
@@ -89,12 +118,11 @@ export default class Desk extends React.Component {
         })
     }
 
-    loadTasks(deskId) {
+    loadTasksByStatus(deskId, statusId) {
         this.error = ""
-
-        try {
-            this.loading = true
-            const url = "http://127.0.0.1:8080/api/tasks"
+        this.loading = true
+        const url = "http://127.0.0.1:8080/api/tasks/getByStatus"
+        return new Promise((resolve) => {
             $.ajax({
                 url: url,
                 headers: {
@@ -103,20 +131,20 @@ export default class Desk extends React.Component {
                 },
                 type: "Get",
                 data: {
-                    "deskId": deskId
+                    "deskId": deskId,
+                    "statusId": statusId
                 },
-                success: async function (result) {
+                success: result => {
                     this.error = ""
-                    this.tasks = result
+                    if (result != null) {
+                        return resolve(result)
+                    }
                 },
                 error: function (error) {
                     console.log('Error ' + error)
                 }
             })
-        } catch {
-            this.error = "Failed to get Tasks"
-        }
-        this.loading = false
+        })
     }
 
     createTask() {
