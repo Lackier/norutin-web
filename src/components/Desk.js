@@ -3,6 +3,7 @@ import React from "react"
 import {Alert, Button, Card, CardGroup, Container, Form} from "react-bootstrap"
 import ModalCloseOrSave from '../ui-elements/modal/ModalCloseOrSave.js'
 import $ from "jquery"
+import TaskItem from "../ui-elements/TaskItem";
 
 export default class Desk extends React.Component {
     constructor(props) {
@@ -14,8 +15,7 @@ export default class Desk extends React.Component {
             modalCreateActive: false,
             statuses: [],
             statusColumns: [],
-            tasks: [],
-            taskColumns: []
+            tasks: []
         }
         this.showModal = this.showModal.bind(this)
         this.hideModal = this.hideModal.bind(this)
@@ -42,11 +42,16 @@ export default class Desk extends React.Component {
         this.setState({tasks: tasks})
     }
 
-    setTaskColumns(taskColumns) {
-        this.setState({taskColumns: taskColumns})
-    }
-
     loadPage(deskId) {
+        const tasks = []
+
+        this.loadTasks(deskId).then(output => {
+            output.forEach(task => {
+                tasks.push(task)
+            })
+            this.setTasks(tasks)
+        })
+
         const statuses = []
         const statusColumns = []
 
@@ -57,7 +62,13 @@ export default class Desk extends React.Component {
                         <Card.Body>
                             <span className="text-center">{status.name}</span>
                             <hr/>
-                            <Button variant="outline-primary" className="w-auto" onClick={this.showModal}>+</Button>
+                            {tasks.filter(task => task.statusId === status.id)
+                                .map((task, index) => (
+                                    <div onClick={() => this.openEditModal(task.id)} className="task mt-2">
+                                        <TaskItem task={task}/>
+                                    </div>
+                                ))}
+                            <Button variant="outline-primary" className="w-auto mt-2" onClick={this.showModal}>+</Button>
                             <span className="ms-2">Create new</span>
                         </Card.Body>
                     </Card>
@@ -66,27 +77,6 @@ export default class Desk extends React.Component {
             })
             this.setStatusColumns(statusColumns)
             this.setStatuses(statuses)
-        })
-    }
-
-    tasksOfStatus(deskId, statusId) {
-        const tasks = []
-        const taskColumns = []
-
-        this.loadTasksByStatus(deskId, statusId).then(output => {
-            output.forEach(task => {
-                const taskRow =
-                    <Card className="w-150-250">
-                        <Card.Body>
-                            <span className="text-center">{task.name}</span>
-                            <hr/>
-                        </Card.Body>
-                    </Card>
-                taskColumns.push(taskRow)
-                tasks.push(task)
-            })
-            this.setTaskColumns(taskColumns)
-            this.setTasks(tasks)
         })
     }
 
@@ -118,10 +108,10 @@ export default class Desk extends React.Component {
         })
     }
 
-    loadTasksByStatus(deskId, statusId) {
+    loadTasks(deskId) {
         this.error = ""
         this.loading = true
-        const url = "http://127.0.0.1:8080/api/tasks/getByStatus"
+        const url = "http://127.0.0.1:8080/api/tasks"
         return new Promise((resolve) => {
             $.ajax({
                 url: url,
@@ -131,8 +121,7 @@ export default class Desk extends React.Component {
                 },
                 type: "Get",
                 data: {
-                    "deskId": deskId,
-                    "statusId": statusId
+                    "deskId": deskId
                 },
                 success: result => {
                     this.error = ""
@@ -147,8 +136,12 @@ export default class Desk extends React.Component {
         })
     }
 
+    openEditModal(taskId) {
+        debugger
+    }
+
     createTask() {
-        //TODO
+        debugger
     }
 
     render() {
