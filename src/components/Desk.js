@@ -12,13 +12,18 @@ export default class Desk extends React.Component {
         this.state = {
             error: "",
             loading: false,
-            modalCreateActive: false,
+            modalCreateTaskActive: false,
+            modalCreateStatusActive: false,
+            modalStatusName: "",
             statuses: [],
             statusColumns: [],
             tasks: []
         }
-        this.showModal = this.showModal.bind(this)
-        this.hideModal = this.hideModal.bind(this)
+        /*this.showModalCreateTask = this.showModalCreateTask.bind(this)
+        this.hideModalCreateTask = this.hideModalCreateTask.bind(this)
+        this.showModalCreateStatus = this.showModalCreateStatus.bind(this)
+        this.hideModalCreateStatus = this.hideModalCreateStatus.bind(this)*/
+        this.createStatus = this.createStatus.bind(this)
         this.loadPage()
     }
 
@@ -30,16 +35,32 @@ export default class Desk extends React.Component {
         this.setState({loading: loading})
     }
 
-    showModal = () => {
-        this.setState({modalCreateActive: true})
+    showModalCreateTask = () => {
+        this.setState({modalCreateTaskActive: true})
     }
 
-    hideModal = () => {
-        this.setState({modalCreateActive: false})
+    hideModalCreateTask = () => {
+        this.setState({modalCreateTaskActive: false})
+    }
+
+    showModalCreateStatus = () => {
+        this.setState({modalCreateStatusActive: true})
+    }
+
+    hideModalCreateStatus = () => {
+        this.setState({modalCreateStatusActive: false})
     }
 
     setStatuses(statuses) {
         this.setState({statuses: statuses})
+    }
+
+    setModalStatusName(modalStatusName) {
+        this.setState({modalStatusName: modalStatusName})
+    }
+
+    clearStatusModalValues() {
+        this.state.modalStatusName.current.value = ""
     }
 
     setStatusColumns(statusColumns) {
@@ -80,28 +101,33 @@ export default class Desk extends React.Component {
                                         </div>
                                     ))}
                                 <Button variant="outline-primary" className="w-auto mt-2"
-                                        onClick={() => this.showModal}>+</Button>
+                                        onClick={() => this.showModalCreateTask}>+</Button>
                                 <span className="ms-2">new</span>
                             </Card.Body>
                         </Card>
                     statusColumns.push(statusRow)
                     statuses.push(status)
                 })
-                const newStatusRow =
-                    <Card className="w-150-250">
-                        <Card.Body>
-                            <Button variant="outline-primary" className="w-auto"
-                                    onClick={this.createStatusModal}>+</Button>
-                            <span className="ms-2">new</span>
-                            <hr/>
-                        </Card.Body>
-                    </Card>
-                statusColumns.push(newStatusRow)
+
+                if (statuses.length < 7) {
+                    statusColumns.push(this.createNewStatusRow())
+                }
 
                 this.setStatusColumns(statusColumns)
                 this.setStatuses(statuses)
             })
         })
+    }
+
+    createNewStatusRow() {
+        return <Card className="w-150-250">
+            <Card.Body>
+                <Button variant="outline-primary" className="w-auto"
+                        onClick={this.showModalCreateStatus}>+</Button>
+                <span className="ms-2">new</span>
+                <hr/>
+            </Card.Body>
+        </Card>
     }
 
     loadStatuses(deskId) {
@@ -168,12 +194,41 @@ export default class Desk extends React.Component {
         this.loadPage()
     }
 
-    createStatusModal() {
-
+    createStatus() {
+        this.createStatusPromise().then(() => {
+            this.hideModalCreateStatus()
+            this.clearStatusModalValues()
+            this.loadPage()
+        })
     }
 
-    createStatus(statusId) {
-        this.loadPage()
+    createStatusPromise() {
+        this.error = ""
+        this.loading = true
+        const url = "http://127.0.0.1:8080/api/deskTaskStatus/create"
+
+        return new Promise((resolve) => {
+            $.ajax({
+                url: url,
+                async: true,
+                headers: {
+                    'Access-Control-Allow-Origin': '*',
+                    'firebase_token': localStorage.token
+                },
+                type: "Post",
+                data: {
+                    "deskId": this.deskId,
+                    "name": this.state.modalStatusName.current.value
+                },
+                success: result => {
+                    this.error = ""
+                    return resolve(result)
+                },
+                error: function (error) {
+                    console.log('Error ' + error)
+                }
+            })
+        })
     }
 
     editStatusModal(statusId) {
@@ -232,10 +287,22 @@ export default class Desk extends React.Component {
                     <CardGroup>
                         {this.state.statusColumns}
 
-                        <ModalCloseOrSave show={this.state.modalCreateActive} handleClose={this.hideModal}
+                        <ModalCloseOrSave show={this.state.modalCreateTaskActive} handleClose={this.hideModalCreateTask}
                                           handleSave={this.createTask}>
                             <Form className="justify-content-center">
 
+                            </Form>
+                        </ModalCloseOrSave>
+
+                        <ModalCloseOrSave show={this.state.modalCreateStatusActive}
+                                          handleClose={this.hideModalCreateStatus}
+                                          handleSave={this.createStatus}>
+                            <Form className="justify-content-center">
+                                <Form.Group id="name" className="form-group">
+                                    <Form.Label>Name</Form.Label>
+                                    <Form.Control type="text" required ref={this.state.modalStatusName}
+                                                  onChange={name => this.setModalStatusName(name)}/>
+                                </Form.Group>
                             </Form>
                         </ModalCloseOrSave>
                     </CardGroup>
