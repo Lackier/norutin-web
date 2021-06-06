@@ -117,3 +117,7 @@ body, html, .App, #root, .auth-wrapper {
 .w-18 {
     width: 18%;
 }
+
+.al-r {
+    float: right;
+}

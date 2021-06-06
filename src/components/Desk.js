@@ -14,7 +14,10 @@ export default class Desk extends React.Component {
             loading: false,
             modalCreateTaskActive: false,
             modalCreateStatusActive: false,
-            modalStatusName: "",
+            modalEditStatusActive: false,
+            modalCreateStatusName: "",
+            modalEditStatusName: {current: {value: ""}},
+            editStatusId: null,
             statuses: [],
             statusColumns: [],
             tasks: []
@@ -24,6 +27,7 @@ export default class Desk extends React.Component {
         this.showModalCreateStatus = this.showModalCreateStatus.bind(this)
         this.hideModalCreateStatus = this.hideModalCreateStatus.bind(this)*/
         this.createStatus = this.createStatus.bind(this)
+        this.editStatus = this.editStatus.bind(this)
         this.loadPage()
     }
 
@@ -51,16 +55,28 @@ export default class Desk extends React.Component {
         this.setState({modalCreateStatusActive: false})
     }
 
+    showModalEditStatus = () => {
+        this.setState({modalEditStatusActive: true})
+    }
+
+    hideModalEditStatus = () => {
+        this.setState({modalEditStatusActive: false})
+    }
+
+    setEditStatusId(editStatusId) {
+        this.setState({editStatusId: editStatusId})
+    }
+
     setStatuses(statuses) {
         this.setState({statuses: statuses})
     }
 
-    setModalStatusName(modalStatusName) {
-        this.setState({modalStatusName: modalStatusName})
+    setModalCreateStatusName(modalStatusName) {
+        this.setState({modalCreateStatusName: modalStatusName})
     }
 
-    clearStatusModalValues() {
-        this.state.modalStatusName.current.value = ""
+    setModalEditStatusName(modalStatusName) {
+        this.setState({modalEditStatusName: modalStatusName})
     }
 
     setStatusColumns(statusColumns) {
@@ -89,10 +105,10 @@ export default class Desk extends React.Component {
                         <Card className="w-150-250">
                             <Card.Body>
                                 <span>{status.name}</span>
-                                <Button variant="outline-danger" className="ms-6 w-auto"
+                                <Button variant="outline-danger" className="w-auto al-r"
                                         onClick={() => this.deleteStatus(status.id)}>✕</Button>
-                                <Button variant="outline-warning" className="ms-1 w-18"
-                                        onClick={() => this.editStatusModal(status.id)}>I</Button>
+                                <Button variant="outline-warning" className="al-r me-1 w-18"
+                                        onClick={() => this.editStatusModal(status)}>I</Button>
                                 <hr/>
                                 {this.state.tasks.filter(task => task.statusId === status.id)
                                     .map((task, index) => (
@@ -197,7 +213,7 @@ export default class Desk extends React.Component {
     createStatus() {
         this.createStatusPromise().then(() => {
             this.hideModalCreateStatus()
-            this.clearStatusModalValues()
+            this.state.modalCreateStatusName.current.value = ""
             this.loadPage()
         })
     }
@@ -218,7 +234,7 @@ export default class Desk extends React.Component {
                 type: "Post",
                 data: {
                     "deskId": this.deskId,
-                    "name": this.state.modalStatusName.current.value
+                    "name": this.state.modalCreateStatusName.current.value
                 },
                 success: result => {
                     this.error = ""
@@ -231,12 +247,48 @@ export default class Desk extends React.Component {
         })
     }
 
-    editStatusModal(statusId) {
-
+    editStatusModal(status) {
+        this.setEditStatusId(status.id)
+        this.state.modalEditStatusName.current.value = status.name
+        this.showModalEditStatus()
     }
 
-    editStatus(statusId) {
-        this.loadPage()
+    editStatus() {
+        this.editStatusPromise().then(() => {
+            this.hideModalEditStatus()
+            this.state.modalEditStatusName.current.value = ""
+            this.setEditStatusId(null)
+            this.loadPage()
+        })
+    }
+
+    editStatusPromise() {
+        this.error = ""
+        this.loading = true
+        const url = "http://127.0.0.1:8080/api/deskTaskStatus/edit"
+
+        return new Promise((resolve) => {
+            $.ajax({
+                url: url,
+                async: true,
+                headers: {
+                    'Access-Control-Allow-Origin': '*',
+                    'firebase_token': localStorage.token
+                },
+                type: "Post",
+                data: {
+                    "id": this.state.editStatusId,
+                    "name": this.state.modalEditStatusName.current.value
+                },
+                success: result => {
+                    this.error = ""
+                    return resolve(result)
+                },
+                error: function (error) {
+                    console.log('Error ' + error)
+                }
+            })
+        })
     }
 
     deleteStatus(statusId) {
@@ -300,8 +352,20 @@ export default class Desk extends React.Component {
                             <Form className="justify-content-center">
                                 <Form.Group id="name" className="form-group">
                                     <Form.Label>Name</Form.Label>
-                                    <Form.Control type="text" required ref={this.state.modalStatusName}
-                                                  onChange={name => this.setModalStatusName(name)}/>
+                                    <Form.Control type="text" required ref={this.state.modalCreateStatusName}
+                                                  onChange={name => this.setModalCreateStatusName(name)}/>
+                                </Form.Group>
+                            </Form>
+                        </ModalCloseOrSave>
+
+                        <ModalCloseOrSave show={this.state.modalEditStatusActive}
+                                          handleClose={this.hideModalEditStatus}
+                                          handleSave={this.editStatus}>
+                            <Form className="justify-content-center">
+                                <Form.Group id="name" className="form-group">
+                                    <Form.Label>Name</Form.Label>
+                                    <Form.Control type="text" required ref={this.state.modalEditStatusName}
+                                                  onChange={name => this.setModalEditStatusName(name)}/>
                                 </Form.Group>
                             </Form>
                         </ModalCloseOrSave>
