@@ -243,7 +243,7 @@ export default function DeskList() {
             <Card>
                 <Card.Body>
                     <Button variant="outline-primary" className="w-12" onClick={() => createDeskModal()}>+</Button>
-                    <span className="ms-2">Create new</span>
+                    <span className="ms-2">new</span>
                 </Card.Body>
             </Card>
 

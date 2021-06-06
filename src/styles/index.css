@@ -102,10 +102,18 @@ body, html, .App, #root, .auth-wrapper {
 }
 
 .task {
-    padding: 3px 37px 3px 37px;
-    border-radius: 8px;
+    padding: 3px 3px 3px 3px;
+    border-radius: 6px;
     transition: all .3s;
     background-color: #ffffff;
     border: 1px solid #167bff;
     flex: 1;
+}
+
+.ms-6 {
+    margin-left:3.5rem!important
+}
+
+.w-18 {
+    width: 18%;
 }

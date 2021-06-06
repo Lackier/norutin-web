@@ -11,10 +11,15 @@ export default function TaskItem({task}) {
 
     return (
         <div>
-            <p>Name: {task.name}</p>
-            <p>Created: {task.createDate}</p>
-            <p>{task.type}</p>
-            <p>{task.priority}</p>
+            <div className="row">
+                <div className="col-sm text-primary fw-bold">{task.name}</div>
+                <div className="col-sm fw-bold">{task.type}</div>
+            </div>
+            <div className="row">
+                <div className="col-sm">Priority:</div>
+                <div className="col-sm text-success fw-bold">{task.priority}</div>
+            </div>
+            <p>Create date: {task.createDate}</p>
             {task.doneDate != null &&
             <div>
                 <p>{task.doneDate}</p>
