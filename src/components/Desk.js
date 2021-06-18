@@ -3,8 +3,9 @@ import React from "react"
 import {Alert, Button, Card, CardGroup, Container, Form} from "react-bootstrap"
 import ModalCloseOrSave from '../ui-elements/modal/ModalCloseOrSave.js'
 import $ from "jquery"
-import TaskItem from "../ui-elements/TaskItem";
-import CreateTaskModal from "../ui-elements/CreateTaskModal";
+import TaskItem from "../ui-elements/TaskItem"
+import CreateTaskModal from "../ui-elements/CreateTaskModal"
+import EditTaskModal from "../ui-elements/EditTaskModal"
 
 export default class Desk extends React.Component {
     constructor(props) {
@@ -31,10 +32,20 @@ export default class Desk extends React.Component {
             modalCreateTaskPriorityType: {value: null},
             modalCreateTaskType: {value: null},
             modalCreateTaskDescription: {current: {value: ""}},
-            modalCreateTaskDeadlineDate: Date()
+            modalCreateTaskDeadlineDate: Date(),
+
+            modalEditTaskId: null,
+            modalEditTaskActive: false,
+            modalEditTaskName: {current: {value: ""}},
+            modalEditTaskStatus: {value: null},
+            modalEditTaskPriorityType: {value: null},
+            modalEditTaskType: {value: null},
+            modalEditTaskDescription: {current: {value: ""}},
+            modalEditTaskDeadlineDate: null
         }
 
         this.createTask = this.createTask.bind(this)
+        this.editTask = this.editTask.bind(this)
         this.createStatus = this.createStatus.bind(this)
         this.editStatus = this.editStatus.bind(this)
         this.loadPage()
@@ -69,6 +80,32 @@ export default class Desk extends React.Component {
     setModalCreateTaskName = (text) => this.setState({modalCreateTaskName: text})
     setModalCreateTaskDescription = (text) => this.setState({modalCreateTaskDescription: text})
     setModalCreateTaskDeadlineDate = (date) => this.setState({modalCreateTaskDeadlineDate: date})
+
+    showModalEditTask = (task) => {
+        this.setState({modalEditTaskActive: true})
+        this.state.modalEditTaskId = task.id
+        this.state.modalEditTaskName.current.value = task.name
+        this.state.modalEditTaskStatus.value = task.statusId
+        this.state.modalEditTaskPriorityType.value = task.priorityId
+        this.state.modalEditTaskType.value = task.typeId
+        this.state.modalEditTaskDescription.current.value = task.description
+        this.setModalEditTaskDeadlineDate(task.doneDate)
+    }
+    clearEditTaskModal = () => {
+        this.state.modalEditTaskId = null
+        this.state.modalEditTaskName.current.value = ""
+        this.state.modalEditTaskStatus.value = null
+        this.state.modalEditTaskDescription.current.value = ""
+        this.state.modalEditTaskPriorityType.value = null
+        this.state.modalEditTaskType.value = null
+    }
+    hideModalEditTask = () => {
+        this.setState({modalEditTaskActive: false})
+        this.clearEditTaskModal()
+    }
+    setModalEditTaskName = (text) => this.setState({modalEditTaskName: text})
+    setModalEditTaskDescription = (text) => this.setState({modalEditTaskDescription: text})
+    setModalEditTaskDeadlineDate = (date) => this.setState({modalEditTaskDeadlineDate: date})
 
     showModalCreateStatus = () => this.setState({modalCreateStatusActive: true})
     setModalCreateStatusName = (text) => this.setState({modalCreateStatusName: text})
@@ -258,7 +295,6 @@ export default class Desk extends React.Component {
     createTask() {
         this.createTaskPromise().then(() => {
             this.hideModalCreateTask()
-            this.clearCreateTaskModal()
             this.loadPage()
         })
     }
@@ -295,7 +331,45 @@ export default class Desk extends React.Component {
     }
 
     openEditModal(taskId) {
-        debugger
+        this.showModalEditTask(this.state.tasks.filter(task => task.id === taskId)[0])
+    }
+
+    editTask() {
+        this.editTaskPromise().then(() => {
+            this.hideModalEditTask()
+            this.loadPage()
+        })
+    }
+
+    editTaskPromise() {
+        const url = "http://127.0.0.1:8080/api/tasks/edit"
+
+        return new Promise((resolve) => {
+            $.ajax({
+                url: url,
+                async: true,
+                headers: {
+                    'Access-Control-Allow-Origin': '*',
+                    'firebase_token': localStorage.token
+                },
+                type: "Post",
+                data: {
+                    "id": this.state.modalEditTaskId,
+                    "name": this.state.modalEditTaskName.current.value,
+                    "statusId": this.state.modalEditTaskStatus.value,
+                    "priorityId": this.state.modalEditTaskPriorityType.value,
+                    "typeId": this.state.modalEditTaskType.value,
+                    "description": this.state.modalEditTaskDescription.current.value,
+                    "doneDate": new Date(this.state.modalEditTaskDeadlineDate)
+                },
+                success: result => {
+                    return resolve(result)
+                },
+                error: function (error) {
+                    console.log('Error ' + error)
+                }
+            })
+        })
     }
 
     createStatus() {
@@ -411,7 +485,8 @@ export default class Desk extends React.Component {
 
     render() {
         const {
-            modalCreateTaskDeadlineDate
+            modalCreateTaskDeadlineDate,
+            modalEditTaskDeadlineDate
         } = this.state;
 
         return (
@@ -448,6 +523,37 @@ export default class Desk extends React.Component {
 
                                          deadlineDateVal={modalCreateTaskDeadlineDate}
                                          onChangeDeadlineDate={date => this.setModalCreateTaskDeadlineDate(date)}/>
+
+                        <EditTaskModal show={this.state.modalEditTaskActive}
+                                       handleSave={this.editTask}
+                                       handleClose={this.hideModalEditTask}
+
+                                       nameRef={this.state.modalEditTaskName}
+                                       onChangeName={text => this.setModalEditTaskName(text)}
+
+                                       statusRef={(input) => this.state.modalEditTaskStatus = input}
+                                       taskStatuses={this.state.statuses}
+                                       taskStatusCallback={(taskStatus) => (
+                                           <option value={taskStatus.id}>{taskStatus.name}</option>
+                                       )}
+
+                                       taskPriorityRef={(input) => this.state.modalEditTaskPriorityType = input}
+                                       priorityTypes={this.state.priorityTypes}
+                                       taskPriorityCallback={(priorityType) => (
+                                           <option value={priorityType.id}>{priorityType.name}</option>
+                                       )}
+
+                                       taskTypeRef={(input) => this.state.modalEditTaskType = input}
+                                       taskTypes={this.state.taskTypes}
+                                       taskTypeCallback={(taskType) => (
+                                           <option value={taskType.id}>{taskType.name}</option>
+                                       )}
+
+                                       descriptionRef={this.state.modalEditTaskDescription}
+                                       onChangeDescription={text => this.setModalEditTaskDescription(text)}
+
+                                       deadlineDateVal={modalEditTaskDeadlineDate}
+                                       onChangeDeadlineDate={date => this.setModalEditTaskDeadlineDate(date)}/>
 
                         <ModalCloseOrSave show={this.state.modalCreateStatusActive}
                                           handleClose={this.hideModalCreateStatus}
