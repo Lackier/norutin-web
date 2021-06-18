@@ -1,6 +1,8 @@
 import '../styles/index.css'
 import React from "react"
 import {Alert, Button, Card, CardGroup, Container, Form} from "react-bootstrap"
+import DateFnsUtils from '@date-io/date-fns';
+import {DateTimePicker, MuiPickersUtilsProvider} from "@material-ui/pickers";
 import ModalCloseOrSave from '../ui-elements/modal/ModalCloseOrSave.js'
 import $ from "jquery"
 import TaskItem from "../ui-elements/TaskItem";
@@ -10,118 +12,88 @@ export default class Desk extends React.Component {
         super(props)
         this.deskId = props.location.search.split("?deskId=")[1]
         this.state = {
-            error: "",
-            loading: false,
-            modalCreateTaskActive: false,
+            statuses: [],
+            priorityTypes: [],
+            taskTypes: [],
+            statusColumns: [],
+            tasks: [],
+
             modalCreateStatusActive: false,
-            modalEditStatusActive: false,
             modalCreateStatusName: "",
+
+            modalEditStatusActive: false,
             modalEditStatusName: {current: {value: ""}},
             editStatusId: null,
-            statuses: [],
-            statusColumns: [],
-            tasks: []
+
+            modalCreateTaskActive: false,
+            modalCreateTaskStatusId: null,
+            modalCreateTaskName: {current: {value: ""}},
+            modalCreateTaskStatus: {current: {value: ""}},
+            modalCreateTaskPriorityType: {value: null},
+            modalCreateTaskType: {value: null},
+            modalCreateTaskDescription: {current: {value: ""}},
+            modalCreateTaskDeadlineDate: Date()
         }
-        /*this.showModalCreateTask = this.showModalCreateTask.bind(this)
-        this.hideModalCreateTask = this.hideModalCreateTask.bind(this)
-        this.showModalCreateStatus = this.showModalCreateStatus.bind(this)
-        this.hideModalCreateStatus = this.hideModalCreateStatus.bind(this)*/
+
+        this.createTask = this.createTask.bind(this)
         this.createStatus = this.createStatus.bind(this)
         this.editStatus = this.editStatus.bind(this)
         this.loadPage()
     }
 
-    setError(error) {
-        this.setState({error: error})
-    }
+    setStatuses = (statuses) => this.setState({statuses: statuses})
+    setPriorityTypes = (priorityTypes) => this.setState({priorityTypes: priorityTypes})
+    setTaskTypes = (taskTypes) => this.setState({taskTypes: taskTypes})
+    setStatusColumns = (statusColumns) => this.setState({statusColumns: statusColumns})
+    setTasks = (tasks) => this.setState({tasks: tasks})
 
-    setLoading(loading) {
-        this.setState({loading: loading})
-    }
-
-    showModalCreateTask = () => {
+    showModalCreateTask = (status) => {
+        this.setState({modalCreateTaskStatusId: status.id})
+        this.state.modalCreateTaskStatus.current.value = status.name
         this.setState({modalCreateTaskActive: true})
+        this.state.modalCreateTaskPriorityType.value = null
+        this.state.modalCreateTaskType.value = null
+        this.setModalCreateTaskDeadlineDate(Date())
     }
-
+    clearCreateTaskModal = () => {
+        this.setState({modalCreateTaskStatusId: null})
+        this.state.modalCreateTaskName.current.value = ""
+        this.state.modalCreateTaskStatus.current.value = ""
+        this.state.modalCreateTaskDescription.current.value = ""
+        this.state.modalCreateTaskPriorityType.value = null
+        this.state.modalCreateTaskType.value = null
+    }
+    setModalCreateTaskName = (text) => this.setState({modalCreateTaskName: text})
+    setModalCreateTaskDescription = (text) => this.setState({modalCreateTaskDescription: text})
     hideModalCreateTask = () => {
         this.setState({modalCreateTaskActive: false})
+        this.clearCreateTaskModal()
     }
+    setModalCreateTaskDeadlineDate = (date) => this.setState({modalCreateTaskDeadlineDate: date})
 
-    showModalCreateStatus = () => {
-        this.setState({modalCreateStatusActive: true})
-    }
+    showModalCreateStatus = () => this.setState({modalCreateStatusActive: true})
+    setModalCreateStatusName = (text) => this.setState({modalCreateStatusName: text})
+    hideModalCreateStatus = () => this.setState({modalCreateStatusActive: false})
 
-    hideModalCreateStatus = () => {
-        this.setState({modalCreateStatusActive: false})
-    }
-
-    showModalEditStatus = () => {
-        this.setState({modalEditStatusActive: true})
-    }
-
-    hideModalEditStatus = () => {
-        this.setState({modalEditStatusActive: false})
-    }
-
-    setEditStatusId(editStatusId) {
-        this.setState({editStatusId: editStatusId})
-    }
-
-    setStatuses(statuses) {
-        this.setState({statuses: statuses})
-    }
-
-    setModalCreateStatusName(modalStatusName) {
-        this.setState({modalCreateStatusName: modalStatusName})
-    }
-
-    setModalEditStatusName(modalStatusName) {
-        this.setState({modalEditStatusName: modalStatusName})
-    }
-
-    setStatusColumns(statusColumns) {
-        this.setState({statusColumns: statusColumns})
-    }
-
-    setTasks(tasks) {
-        this.setState({tasks: tasks})
-    }
+    showModalEditStatus = () => this.setState({modalEditStatusActive: true})
+    setEditStatusId = (text) => this.setState({editStatusId: text})
+    setModalEditStatusName = (text) => this.setState({modalEditStatusName: text})
+    hideModalEditStatus = () => this.setState({modalEditStatusActive: false})
 
     loadPage() {
-        const tasks = []
-        const statuses = []
-        const statusColumns = []
-
         this.loadTasks(this.deskId).then(output => {
+            const tasks = []
             output.forEach(task => {
                 tasks.push(task)
             })
             this.setTasks(tasks)
-
         }).then(() => {
             this.loadStatuses(this.deskId).then(output => {
+                const statuses = []
+                const statusColumns = []
+
                 output.forEach(status => {
-                    const statusRow =
-                        <Card className="w-150-250">
-                            <Card.Body>
-                                <span>{status.name}</span>
-                                <Button variant="outline-danger" className="w-auto al-r"
-                                        onClick={() => this.deleteStatus(status.id)}>✕</Button>
-                                <Button variant="outline-warning" className="al-r me-1 w-18"
-                                        onClick={() => this.editStatusModal(status)}>I</Button>
-                                <hr/>
-                                {this.state.tasks.filter(task => task.statusId === status.id)
-                                    .map((task, index) => (
-                                        <div onClick={() => this.openEditModal(task.id)} className="task mt-2 bg-light">
-                                            <TaskItem task={task}/>
-                                        </div>
-                                    ))}
-                                <Button variant="outline-primary" className="w-auto mt-2"
-                                        onClick={() => this.showModalCreateTask}>+</Button>
-                                <span className="ms-2">new</span>
-                            </Card.Body>
-                        </Card>
-                    statusColumns.push(statusRow)
+                    statusColumns.push(this.createStatusRow(status))
                     statuses.push(status)
                 })
 
@@ -132,7 +104,45 @@ export default class Desk extends React.Component {
                 this.setStatusColumns(statusColumns)
                 this.setStatuses(statuses)
             })
+        }).then(() => {
+            this.loadPriorityTypes(this.deskId).then(output => {
+                const priorityTypes = []
+                output.forEach(priorityType => {
+                    priorityTypes.push(priorityType)
+                })
+                this.setPriorityTypes(priorityTypes)
+            })
+        }).then(() => {
+            this.loadTaskTypes(this.deskId).then(output => {
+                const taskTypes = []
+                output.forEach(taskType => {
+                    taskTypes.push(taskType)
+                })
+                this.setTaskTypes(taskTypes)
+            })
         })
+    }
+
+    createStatusRow(status) {
+        return <Card className="w-150-250">
+            <Card.Body>
+                <span>{status.name}</span>
+                <Button variant="outline-danger" className="w-auto al-r"
+                        onClick={() => this.deleteStatus(status.id)}>✕</Button>
+                <Button variant="outline-warning" className="al-r me-1 w-18"
+                        onClick={() => this.editStatusModal(status)}>I</Button>
+                <hr/>
+                {this.state.tasks.filter(task => task.statusId === status.id)
+                    .map((task, index) => (
+                        <div onClick={() => this.openEditModal(task.id)} className="task mt-2 bg-light">
+                            <TaskItem task={task}/>
+                        </div>
+                    ))}
+                <Button variant="outline-primary" className="w-auto mt-2"
+                        onClick={() => this.showModalCreateTask(status)}>+</Button>
+                <span className="ms-2">new</span>
+            </Card.Body>
+        </Card>
     }
 
     createNewStatusRow() {
@@ -147,8 +157,6 @@ export default class Desk extends React.Component {
     }
 
     loadStatuses(deskId) {
-        this.error = ""
-        this.loading = true
         const url = "http://127.0.0.1:8080/api/deskTaskStatus"
 
         return new Promise((resolve) => {
@@ -164,7 +172,56 @@ export default class Desk extends React.Component {
                     "deskId": deskId
                 },
                 success: result => {
-                    this.error = ""
+                    return resolve(result)
+                },
+                error: function (error) {
+                    console.log('Error ' + error)
+                }
+            })
+        })
+    }
+
+    loadPriorityTypes(deskId) {
+        const url = "http://127.0.0.1:8080/api/deskPriorityType"
+
+        return new Promise((resolve) => {
+            $.ajax({
+                url: url,
+                async: true,
+                headers: {
+                    'Access-Control-Allow-Origin': '*',
+                    'firebase_token': localStorage.token
+                },
+                type: "Get",
+                data: {
+                    "deskId": deskId
+                },
+                success: result => {
+                    return resolve(result)
+                },
+                error: function (error) {
+                    console.log('Error ' + error)
+                }
+            })
+        })
+    }
+
+    loadTaskTypes(deskId) {
+        const url = "http://127.0.0.1:8080/api/deskTaskType"
+
+        return new Promise((resolve) => {
+            $.ajax({
+                url: url,
+                async: true,
+                headers: {
+                    'Access-Control-Allow-Origin': '*',
+                    'firebase_token': localStorage.token
+                },
+                type: "Get",
+                data: {
+                    "deskId": deskId
+                },
+                success: result => {
                     return resolve(result)
                 },
                 error: function (error) {
@@ -175,8 +232,6 @@ export default class Desk extends React.Component {
     }
 
     loadTasks(deskId) {
-        this.error = ""
-        this.loading = true
         const url = "http://127.0.0.1:8080/api/tasks/ofDeskWithNames"
         return new Promise((resolve) => {
             $.ajax({
@@ -190,10 +245,48 @@ export default class Desk extends React.Component {
                     "deskId": deskId
                 },
                 success: result => {
-                    this.error = ""
                     if (result != null) {
                         return resolve(result)
                     }
+                },
+                error: function (error) {
+                    console.log('Error ' + error)
+                }
+            })
+        })
+    }
+
+    createTask() {
+        this.createTaskPromise().then(() => {
+            this.hideModalCreateTask()
+            this.clearCreateTaskModal()
+            this.loadPage()
+        })
+    }
+
+    createTaskPromise() {
+        const url = "http://127.0.0.1:8080/api/tasks/create"
+
+        return new Promise((resolve) => {
+            $.ajax({
+                url: url,
+                async: true,
+                headers: {
+                    'Access-Control-Allow-Origin': '*',
+                    'firebase_token': localStorage.token
+                },
+                type: "Post",
+                data: {
+                    "deskId": this.deskId,
+                    "name": this.state.modalCreateTaskName.current.value,
+                    "statusId": this.state.modalCreateTaskStatusId,
+                    "priorityId": this.state.modalCreateTaskPriorityType.value,
+                    "typeId": this.state.modalCreateTaskType.value,
+                    "description": this.state.modalCreateTaskDescription.current.value,
+                    "doneDate": this.state.modalCreateTaskDeadlineDate
+                },
+                success: result => {
+                    return resolve(result)
                 },
                 error: function (error) {
                     console.log('Error ' + error)
@@ -206,10 +299,6 @@ export default class Desk extends React.Component {
         debugger
     }
 
-    createTask() {
-        this.loadPage()
-    }
-
     createStatus() {
         this.createStatusPromise().then(() => {
             this.hideModalCreateStatus()
@@ -219,8 +308,6 @@ export default class Desk extends React.Component {
     }
 
     createStatusPromise() {
-        this.error = ""
-        this.loading = true
         const url = "http://127.0.0.1:8080/api/deskTaskStatus/create"
 
         return new Promise((resolve) => {
@@ -237,7 +324,6 @@ export default class Desk extends React.Component {
                     "name": this.state.modalCreateStatusName.current.value
                 },
                 success: result => {
-                    this.error = ""
                     return resolve(result)
                 },
                 error: function (error) {
@@ -263,8 +349,6 @@ export default class Desk extends React.Component {
     }
 
     editStatusPromise() {
-        this.error = ""
-        this.loading = true
         const url = "http://127.0.0.1:8080/api/deskTaskStatus/edit"
 
         return new Promise((resolve) => {
@@ -281,7 +365,6 @@ export default class Desk extends React.Component {
                     "name": this.state.modalEditStatusName.current.value
                 },
                 success: result => {
-                    this.error = ""
                     return resolve(result)
                 },
                 error: function (error) {
@@ -303,8 +386,6 @@ export default class Desk extends React.Component {
     }
 
     deleteStatusPromise(statusId) {
-        this.error = ""
-        this.loading = true
         const url = "http://127.0.0.1:8080/api/deskTaskStatus"
 
         return new Promise((resolve) => {
@@ -320,7 +401,6 @@ export default class Desk extends React.Component {
                     "id": statusId
                 },
                 success: result => {
-                    this.error = ""
                     return resolve(result)
                 },
                 error: function (error) {
@@ -331,6 +411,10 @@ export default class Desk extends React.Component {
     }
 
     render() {
+        const {
+            modalCreateTaskDeadlineDate
+        } = this.state;
+
         return (
             <div className="tasks">
                 <Container fluid>
@@ -339,10 +423,56 @@ export default class Desk extends React.Component {
                     <CardGroup>
                         {this.state.statusColumns}
 
-                        <ModalCloseOrSave show={this.state.modalCreateTaskActive} handleClose={this.hideModalCreateTask}
-                                          handleSave={this.createTask}>
+                        <ModalCloseOrSave show={this.state.modalCreateTaskActive}
+                                          handleSave={this.createTask}
+                                          handleClose={this.hideModalCreateTask}>
                             <Form className="justify-content-center">
+                                <Form.Group id="name" className="form-group">
+                                    <Form.Label>Name</Form.Label>
+                                    <Form.Control type="text" required ref={this.state.modalCreateTaskName}
+                                                  onChange={text => this.setModalCreateTaskName(text)}/>
+                                </Form.Group>
 
+                                <Form.Group id="status" className="form-group">
+                                    <Form.Label>Status</Form.Label>
+                                    <Form.Control type="text" readOnly plaintext
+                                                  ref={this.state.modalCreateTaskStatus}/>
+                                </Form.Group>
+
+                                <div className="form-group">
+                                    <label htmlFor="taskPriority">Priority</label>
+                                    <select className="form-control" id="taskPriority" required
+                                            ref={(input) => this.state.modalCreateTaskPriorityType = input}>
+                                        {this.state.priorityTypes.map((priorityType) => (
+                                            <option value={priorityType.id}>{priorityType.name}</option>
+                                        ))}
+                                    </select>
+                                </div>
+
+                                <div className="form-group">
+                                    <label htmlFor="taskType">Type</label>
+                                    <select className="form-control" id="taskType" required
+                                            ref={(input) => this.state.modalCreateTaskType = input}>
+                                        {this.state.taskTypes.map((taskType) => (
+                                            <option value={taskType.id}>{taskType.name}</option>
+                                        ))}
+                                    </select>
+                                </div>
+
+                                <div className="form-group">
+                                    <label htmlFor="description">Description</label>
+                                    <textarea className="form-control" rows="5" id="description"
+                                              required ref={this.state.modalCreateTaskDescription}
+                                              onChange={text => this.setModalCreateTaskDescription(text)}/>
+                                </div>
+
+                                <MuiPickersUtilsProvider utils={DateFnsUtils}>
+                                    <p><label>Deadline date</label></p>
+                                    <DateTimePicker ampm={false} disablePast format="yyyy/MM/dd HH:mm"
+                                                    value={modalCreateTaskDeadlineDate}
+                                                    onChange={date => this.setModalCreateTaskDeadlineDate(date)}
+                                    />
+                                </MuiPickersUtilsProvider>
                             </Form>
                         </ModalCloseOrSave>
 

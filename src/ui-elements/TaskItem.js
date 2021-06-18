@@ -1,10 +1,15 @@
 import React from "react"
+import {format} from "date-fns";
 
 export default function TaskItem({task}) {
     function setTaskItem(task) {
         task.name = task.name.slice(0, 15)
-        task.createDate = task.createDate.slice(0, 15)
         return task;
+    }
+
+    function formatDate(stringDate) {
+        let date = new Date(stringDate);
+        return format(date, "dd.MM.yyyy HH:mm");
     }
 
     task = setTaskItem(task)
@@ -13,22 +18,22 @@ export default function TaskItem({task}) {
         <div>
             <div className="row">
                 <div className="col-sm text-primary fw-bold">{task.name}</div>
-                <div className="col-sm fw-bold">{task.type}</div>
+                <div className="col-sm">{task.type}</div>
             </div>
             <div className="row">
                 <div className="col-sm">Priority:</div>
                 <div className="col-sm text-success fw-bold">{task.priority}</div>
             </div>
-            <p>Create date: {task.createDate}</p>
             {task.doneDate != null &&
-            <div>
-                <p>{task.doneDate}</p>
-                <p>{task.doneOnTime}</p>
+            <div className="row">
+                <span className="col-sm">Deadline:</span>
+                <span className="col-sm">{formatDate(task.doneDate)}</span>
             </div>
             }
             {task.commitDate != null &&
             <div>
-                <p>{task.commitDate}</p>
+                <p>{formatDate(task.commitDate)}</p>
+                <p>{task.doneOnTime}</p>
             </div>
             }
         </div>
