@@ -62,12 +62,12 @@ export default class Desk extends React.Component {
         this.state.modalCreateTaskPriorityType.value = null
         this.state.modalCreateTaskType.value = null
     }
-    setModalCreateTaskName = (text) => this.setState({modalCreateTaskName: text})
-    setModalCreateTaskDescription = (text) => this.setState({modalCreateTaskDescription: text})
     hideModalCreateTask = () => {
         this.setState({modalCreateTaskActive: false})
         this.clearCreateTaskModal()
     }
+    setModalCreateTaskName = (text) => this.setState({modalCreateTaskName: text})
+    setModalCreateTaskDescription = (text) => this.setState({modalCreateTaskDescription: text})
     setModalCreateTaskDeadlineDate = (date) => this.setState({modalCreateTaskDeadlineDate: date})
 
     showModalCreateStatus = () => this.setState({modalCreateStatusActive: true})
