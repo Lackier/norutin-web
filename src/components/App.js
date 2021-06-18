@@ -31,18 +31,16 @@ function App() {
                     </div>
                 </nav>
 
-                <div className="auth-wrapper">
-                    <div className="auth-inner">
-                        <AuthProvider>
-                            <Switch>
-                                <PrivateRoute exact path="/" component={Dashboard}/>
-                                <Route path="/signup" component={Signup}/>
-                                <Route path="/login" component={Login}/>
-                                <PrivateRoute exact path="/desks" component={DeskList}/>
-                                <PrivateRoute exact path="/tasks" component={Desk}/>
-                            </Switch>
-                        </AuthProvider>
-                    </div>
+                <div className="auth-wrapper mt-5">
+                    <AuthProvider>
+                        <Switch>
+                            <PrivateRoute exact path="/" component={Dashboard}/>
+                            <Route path="/signup" component={Signup}/>
+                            <Route path="/login" component={Login}/>
+                            <PrivateRoute exact path="/desks" component={DeskList}/>
+                            <PrivateRoute exact path="/tasks" component={Desk}/>
+                        </Switch>
+                    </AuthProvider>
                 </div>
             </div>
         </Router>

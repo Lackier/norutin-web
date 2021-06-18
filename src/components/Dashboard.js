@@ -50,7 +50,7 @@ export default function Dashboard() {
     }
 
     return (
-        <div className="mt-5">
+        <div className="auth-inner">
             <h2 className="text-center mb-4">Profile</h2>
             {error && <Alert variant="danger">{error}</Alert>}
             <strong>Email:</strong> {currentUser.email}

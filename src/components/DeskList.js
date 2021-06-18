@@ -50,32 +50,7 @@ export default function DeskList() {
 
     async function openDesk(id) {
         setError("")
-
-        try {
-            setLoading(true)
-            const url = "http://127.0.0.1:8080/api/tasks"
-            $.ajax({
-                url: url,
-                headers: {
-                    'Access-Control-Allow-Origin': '*',
-                    'firebase_token': localStorage.token
-                },
-                type: "Get",
-                data: {
-                    "deskId": id
-                },
-                success: function (result) {
-                    setError("")
-                    history.push("/tasks", result)
-                },
-                error: function (error) {
-                    console.log('Error ' + error)
-                }
-            })
-        } catch {
-            setError("Failed to get Desks")
-        }
-        setLoading(false)
+        history.push("/tasks?deskId=" + id)
     }
 
     function createDeskModal() {
@@ -241,7 +216,8 @@ export default function DeskList() {
     }
 
     return (
-        <Container fluid className="mt-5">
+        <div className="auth-inner">
+        <Container fluid>
             <h2 className="text-center mb-4">Desks</h2>
             {error && <Alert variant="danger">{error}</Alert>}
             {desks.map((desk, index) => (
@@ -267,7 +243,7 @@ export default function DeskList() {
             <Card>
                 <Card.Body>
                     <Button variant="outline-primary" className="w-12" onClick={() => createDeskModal()}>+</Button>
-                    <span className="ms-2">Create new</span>
+                    <span className="ms-2">new</span>
                 </Card.Body>
             </Card>
 
@@ -315,5 +291,6 @@ export default function DeskList() {
                 </Form>
             </SimpleModal>
         </Container>
+        </div>
     )
 }
