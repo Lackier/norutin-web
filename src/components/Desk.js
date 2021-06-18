@@ -1,11 +1,10 @@
 import '../styles/index.css'
 import React from "react"
 import {Alert, Button, Card, CardGroup, Container, Form} from "react-bootstrap"
-import DateFnsUtils from '@date-io/date-fns';
-import {DateTimePicker, MuiPickersUtilsProvider} from "@material-ui/pickers";
 import ModalCloseOrSave from '../ui-elements/modal/ModalCloseOrSave.js'
 import $ from "jquery"
 import TaskItem from "../ui-elements/TaskItem";
+import CreateTaskModal from "../ui-elements/CreateTaskModal";
 
 export default class Desk extends React.Component {
     constructor(props) {
@@ -423,58 +422,32 @@ export default class Desk extends React.Component {
                     <CardGroup>
                         {this.state.statusColumns}
 
-                        <ModalCloseOrSave show={this.state.modalCreateTaskActive}
-                                          handleSave={this.createTask}
-                                          handleClose={this.hideModalCreateTask}>
-                            <Form className="justify-content-center">
-                                <Form.Group id="name" className="form-group">
-                                    <Form.Label>Name</Form.Label>
-                                    <Form.Control type="text" required ref={this.state.modalCreateTaskName}
-                                                  onChange={text => this.setModalCreateTaskName(text)}/>
-                                </Form.Group>
+                        <CreateTaskModal show={this.state.modalCreateTaskActive}
+                                         handleSave={this.createTask}
+                                         handleClose={this.hideModalCreateTask}
 
-                                <Form.Group id="status" className="form-group">
-                                    <Form.Label>Status</Form.Label>
-                                    <Form.Control type="text" readOnly plaintext
-                                                  ref={this.state.modalCreateTaskStatus}/>
-                                </Form.Group>
+                                         nameRef={this.state.modalCreateTaskName}
+                                         onChangeName={text => this.setModalCreateTaskName(text)}
 
-                                <div className="form-group">
-                                    <label htmlFor="taskPriority">Priority</label>
-                                    <select className="form-control" id="taskPriority" required
-                                            ref={(input) => this.state.modalCreateTaskPriorityType = input}>
-                                        {this.state.priorityTypes.map((priorityType) => (
-                                            <option value={priorityType.id}>{priorityType.name}</option>
-                                        ))}
-                                    </select>
-                                </div>
+                                         statusRef={this.state.modalCreateTaskStatus}
 
-                                <div className="form-group">
-                                    <label htmlFor="taskType">Type</label>
-                                    <select className="form-control" id="taskType" required
-                                            ref={(input) => this.state.modalCreateTaskType = input}>
-                                        {this.state.taskTypes.map((taskType) => (
-                                            <option value={taskType.id}>{taskType.name}</option>
-                                        ))}
-                                    </select>
-                                </div>
+                                         taskPriorityRef={(input) => this.state.modalCreateTaskPriorityType = input}
+                                         priorityTypes={this.state.priorityTypes}
+                                         taskPriorityCallback={(priorityType) => (
+                                             <option value={priorityType.id}>{priorityType.name}</option>
+                                         )}
 
-                                <div className="form-group">
-                                    <label htmlFor="description">Description</label>
-                                    <textarea className="form-control" rows="5" id="description"
-                                              required ref={this.state.modalCreateTaskDescription}
-                                              onChange={text => this.setModalCreateTaskDescription(text)}/>
-                                </div>
+                                         taskTypeRef={(input) => this.state.modalCreateTaskType = input}
+                                         taskTypes={this.state.taskTypes}
+                                         taskTypeCallback={(taskType) => (
+                                             <option value={taskType.id}>{taskType.name}</option>
+                                         )}
 
-                                <MuiPickersUtilsProvider utils={DateFnsUtils}>
-                                    <p><label>Deadline date</label></p>
-                                    <DateTimePicker ampm={false} disablePast format="dd.MM.yyyy HH:mm"
-                                                    value={modalCreateTaskDeadlineDate}
-                                                    onChange={date => this.setModalCreateTaskDeadlineDate(date)}
-                                    />
-                                </MuiPickersUtilsProvider>
-                            </Form>
-                        </ModalCloseOrSave>
+                                         descriptionRef={this.state.modalCreateTaskDescription}
+                                         onChangeDescription={text => this.setModalCreateTaskDescription(text)}
+
+                                         deadlineDateVal={modalCreateTaskDeadlineDate}
+                                         onChangeDeadlineDate={date => this.setModalCreateTaskDeadlineDate(date)}/>
 
                         <ModalCloseOrSave show={this.state.modalCreateStatusActive}
                                           handleClose={this.hideModalCreateStatus}
