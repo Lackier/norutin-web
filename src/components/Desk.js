@@ -468,7 +468,7 @@ export default class Desk extends React.Component {
 
                                 <MuiPickersUtilsProvider utils={DateFnsUtils}>
                                     <p><label>Deadline date</label></p>
-                                    <DateTimePicker ampm={false} disablePast format="yyyy/MM/dd HH:mm"
+                                    <DateTimePicker ampm={false} disablePast format="dd.MM.yyyy HH:mm"
                                                     value={modalCreateTaskDeadlineDate}
                                                     onChange={date => this.setModalCreateTaskDeadlineDate(date)}
                                     />
