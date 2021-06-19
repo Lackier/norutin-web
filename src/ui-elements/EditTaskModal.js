@@ -1,15 +1,16 @@
 import React from "react";
-import ModalCloseOrSave from "./modal/ModalCloseOrSave";
 import {Form} from "react-bootstrap";
 import {DateTimePicker, MuiPickersUtilsProvider} from "@material-ui/pickers";
 import DateFnsUtils from "@date-io/date-fns";
 import * as PropTypes from "prop-types";
+import ModalDeleteCloseSave from "./modal/ModalDeleteCloseSave";
 
 export default class EditTaskModal extends React.Component {
     render() {
-        return <ModalCloseOrSave show={this.props.show}
-                                 handleSave={this.props.handleSave}
-                                 handleClose={this.props.handleClose}>
+        return <ModalDeleteCloseSave show={this.props.show}
+                                     handleSave={this.props.handleSave}
+                                     handleClose={this.props.handleClose}
+                                     handleDelete={this.props.handleDelete}>
             <Form className="justify-content-center">
                 <Form.Group id="name" className="form-group">
                     <Form.Label>Name</Form.Label>
@@ -56,7 +57,7 @@ export default class EditTaskModal extends React.Component {
                     />
                 </MuiPickersUtilsProvider>
             </Form>
-        </ModalCloseOrSave>;
+        </ModalDeleteCloseSave>;
     }
 }
 
@@ -64,6 +65,7 @@ EditTaskModal.propTypes = {
     show: PropTypes.bool,
     handleSave: PropTypes.func,
     handleClose: PropTypes.func,
+    handleDelete: PropTypes.func,
 
     nameRef: PropTypes.shape({current: PropTypes.shape({value: PropTypes.string})}),
     onChangeName: PropTypes.func,

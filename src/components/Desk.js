@@ -46,6 +46,7 @@ export default class Desk extends React.Component {
 
         this.createTask = this.createTask.bind(this)
         this.editTask = this.editTask.bind(this)
+        this.deleteTask = this.deleteTask.bind(this)
         this.createStatus = this.createStatus.bind(this)
         this.editStatus = this.editStatus.bind(this)
         this.loadPage()
@@ -372,6 +373,38 @@ export default class Desk extends React.Component {
         })
     }
 
+    deleteTask() {
+        this.deleteTaskPromise().then(() => {
+            this.hideModalEditTask()
+            this.loadPage()
+        })
+    }
+
+    deleteTaskPromise() {
+        const url = "http://127.0.0.1:8080/api/tasks"
+
+        return new Promise((resolve) => {
+            $.ajax({
+                url: url,
+                async: true,
+                headers: {
+                    'Access-Control-Allow-Origin': '*',
+                    'firebase_token': localStorage.token
+                },
+                type: "Delete",
+                data: {
+                    "id": this.state.modalEditTaskId
+                },
+                success: result => {
+                    return resolve(result)
+                },
+                error: function (error) {
+                    console.log('Error ' + error)
+                }
+            })
+        })
+    }
+
     createStatus() {
         this.createStatusPromise().then(() => {
             this.hideModalCreateStatus()
@@ -527,6 +560,7 @@ export default class Desk extends React.Component {
                         <EditTaskModal show={this.state.modalEditTaskActive}
                                        handleSave={this.editTask}
                                        handleClose={this.hideModalEditTask}
+                                       handleDelete={this.deleteTask}
 
                                        nameRef={this.state.modalEditTaskName}
                                        onChangeName={text => this.setModalEditTaskName(text)}
