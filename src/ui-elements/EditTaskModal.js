@@ -51,7 +51,7 @@ export default class EditTaskModal extends React.Component {
 
                 <MuiPickersUtilsProvider utils={DateFnsUtils}>
                     <p><label>Deadline date</label></p>
-                    <DateTimePicker ampm={false} disablePast format="dd.MM.yyyy HH:mm"
+                    <DateTimePicker ampm={false} format="dd.MM.yyyy HH:mm"
                                     value={this.props.deadlineDateVal}
                                     onChange={this.props.onChangeDeadlineDate}
                     />

@@ -5,6 +5,7 @@ import {Alert, Button, ButtonGroup, Card, Container, Form, FormCheck} from 'reac
 import DeskListItem from '../ui-elements/DeskListItem'
 import SimpleModal from '../ui-elements/modal/SimpleModal'
 import $ from "jquery";
+import {BsPlus, BsX, BsPencil} from "react-icons/bs";
 
 export default function DeskList() {
     const [error, setError] = useState("")
@@ -232,18 +233,25 @@ export default function DeskList() {
                                 editDesk={editDeskModal}
                             />
                         </div>
-                        <Button variant="outline-danger" className="mt-2 w-12"
-                                onClick={() => removeDesk(desk.id)}>✕</Button>
-                        <Button variant="outline-warning" className="mt-2 ms-2 w-12"
-                                onClick={(event) => editDeskModal(event, desk.id)}>I</Button>
+                        <Button variant="outline-danger" className="mt-2 w-auto"
+                                onClick={() => removeDesk(desk.id)}>
+                            <BsX/>
+                        </Button>
+                        <Button variant="outline-warning" className="mt-2 ms-2 w-auto"
+                                onClick={(event) => editDeskModal(event, desk.id)}>
+                            <BsPencil/>
+                        </Button>
                     </Card.Body>
                 </Card>
             ))}
 
             <Card>
                 <Card.Body>
-                    <Button variant="outline-primary" className="w-12" onClick={() => createDeskModal()}>+</Button>
-                    <span className="ms-2">new</span>
+                    <h3>
+                        <Button variant="outline-primary" className="w-auto" onClick={() => createDeskModal()}>
+                            <BsPlus/>
+                        </Button>
+                    </h3>
                 </Card.Body>
             </Card>
 
