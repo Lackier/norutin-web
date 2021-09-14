@@ -6,17 +6,23 @@ import $ from "jquery"
 import TaskItem from "../ui-elements/TaskItem"
 import CreateTaskModal from "../ui-elements/CreateTaskModal"
 import EditTaskModal from "../ui-elements/EditTaskModal"
+import PrioritiesModal from "../ui-elements/PrioritiesModal"
+import {BsPlus, BsX, BsPencil} from "react-icons/bs";
 
 export default class Desk extends React.Component {
     constructor(props) {
         super(props)
         this.deskId = props.location.search.split("?deskId=")[1]
+        this.deskName = ""
         this.state = {
             statuses: [],
             priorityTypes: [],
             taskTypes: [],
             statusColumns: [],
             tasks: [],
+
+            modalPrioritiesActive: false,
+            modalTypesActive: false,
 
             modalCreateStatusActive: false,
             modalCreateStatusName: "",
@@ -51,6 +57,8 @@ export default class Desk extends React.Component {
         this.editStatus = this.editStatus.bind(this)
         this.loadPage()
     }
+
+    setDeskName = (text) => this.deskName = text
 
     setStatuses = (statuses) => this.setState({statuses: statuses})
     setPriorityTypes = (priorityTypes) => this.setState({priorityTypes: priorityTypes})
@@ -108,6 +116,15 @@ export default class Desk extends React.Component {
     setModalEditTaskDescription = (text) => this.setState({modalEditTaskDescription: text})
     setModalEditTaskDeadlineDate = (date) => this.setState({modalEditTaskDeadlineDate: date})
 
+    showModalPriorities = () => this.setState({modalPrioritiesActive: true})
+    hideModalPriorities = () => {
+        this.setState({modalPrioritiesActive: false})
+        this.loadPage()
+    }
+
+    showModalTypes = () => this.setState({showModalTypes: true})
+    hideModalTypes = () => this.setState({showModalTypes: false})
+
     showModalCreateStatus = () => this.setState({modalCreateStatusActive: true})
     setModalCreateStatusName = (text) => this.setState({modalCreateStatusName: text})
     hideModalCreateStatus = () => this.setState({modalCreateStatusActive: false})
@@ -118,44 +135,48 @@ export default class Desk extends React.Component {
     hideModalEditStatus = () => this.setState({modalEditStatusActive: false})
 
     loadPage() {
-        this.loadTasks(this.deskId).then(output => {
-            const tasks = []
-            output.forEach(task => {
-                tasks.push(task)
-            })
-            this.setTasks(tasks)
+        this.loadDesk(this.deskId).then(output => {
+            this.setDeskName(output.data.name)
         }).then(() => {
-            this.loadStatuses(this.deskId).then(output => {
-                const statuses = []
-                const statusColumns = []
-
-                output.forEach(status => {
-                    statusColumns.push(this.createStatusRow(status))
-                    statuses.push(status)
+            this.loadTasks(this.deskId).then(output => {
+                const tasks = []
+                output.forEach(task => {
+                    tasks.push(task)
                 })
+                this.setTasks(tasks)
+            }).then(() => {
+                this.loadStatuses(this.deskId).then(output => {
+                    const statuses = []
+                    const statusColumns = []
 
-                if (statuses.length < 7) {
-                    statusColumns.push(this.createNewStatusRow())
-                }
+                    output.forEach(status => {
+                        statusColumns.push(this.createStatusRow(status))
+                        statuses.push(status)
+                    })
 
-                this.setStatusColumns(statusColumns)
-                this.setStatuses(statuses)
-            })
-        }).then(() => {
-            this.loadPriorityTypes(this.deskId).then(output => {
-                const priorityTypes = []
-                output.forEach(priorityType => {
-                    priorityTypes.push(priorityType)
+                    if (statuses.length < 7) {
+                        statusColumns.push(this.createNewStatusRow())
+                    }
+
+                    this.setStatusColumns(statusColumns)
+                    this.setStatuses(statuses)
+                }).then(() => {
+                    this.loadPriorityTypes(this.deskId).then(output => {
+                        const priorityTypes = []
+                        output.forEach(priorityType => {
+                            priorityTypes.push(priorityType)
+                        })
+                        this.setPriorityTypes(priorityTypes)
+                    }).then(() => {
+                        this.loadTaskTypes(this.deskId).then(output => {
+                            const taskTypes = []
+                            output.forEach(taskType => {
+                                taskTypes.push(taskType)
+                            })
+                            this.setTaskTypes(taskTypes)
+                        })
+                    })
                 })
-                this.setPriorityTypes(priorityTypes)
-            })
-        }).then(() => {
-            this.loadTaskTypes(this.deskId).then(output => {
-                const taskTypes = []
-                output.forEach(taskType => {
-                    taskTypes.push(taskType)
-                })
-                this.setTaskTypes(taskTypes)
             })
         })
     }
@@ -165,9 +186,13 @@ export default class Desk extends React.Component {
             <Card.Body>
                 <span>{status.name}</span>
                 <Button variant="outline-danger" className="w-auto al-r"
-                        onClick={() => this.deleteStatus(status.id)}>✕</Button>
-                <Button variant="outline-warning" className="al-r me-1 w-18"
-                        onClick={() => this.editStatusModal(status)}>I</Button>
+                        onClick={() => this.deleteStatus(status.id)}>
+                    <BsX/>
+                </Button>
+                <Button variant="outline-warning" className="w-auto al-r"
+                        onClick={() => this.editStatusModal(status)}>
+                    <BsPencil/>
+                </Button>
                 <hr/>
                 {this.state.tasks.filter(task => task.statusId === status.id)
                     .map((task, index) => (
@@ -175,9 +200,12 @@ export default class Desk extends React.Component {
                             <TaskItem task={task}/>
                         </div>
                     ))}
-                <Button variant="outline-primary" className="w-auto mt-2"
-                        onClick={() => this.showModalCreateTask(status)}>+</Button>
-                <span className="ms-2">new</span>
+                <center>
+                    <Button variant="outline-primary" className="w-auto mt-2"
+                            onClick={() => this.showModalCreateTask(status)}>
+                        <BsPlus/>
+                    </Button>
+                </center>
             </Card.Body>
         </Card>
     }
@@ -185,16 +213,18 @@ export default class Desk extends React.Component {
     createNewStatusRow() {
         return <Card className="w-150-250">
             <Card.Body>
-                <Button variant="outline-primary" className="w-auto"
-                        onClick={this.showModalCreateStatus}>+</Button>
-                <span className="ms-2">new</span>
-                <hr/>
+                <center>
+                    <Button variant="outline-primary" className="w-auto"
+                            onClick={this.showModalCreateStatus}>
+                        <BsPlus/>
+                    </Button>
+                </center>
             </Card.Body>
         </Card>
     }
 
     loadStatuses(deskId) {
-        const url = "http://127.0.0.1:8080/api/deskTaskStatus"
+        const url = "http://127.0.0.1:8080/api/taskStatus"
 
         return new Promise((resolve) => {
             $.ajax({
@@ -219,7 +249,7 @@ export default class Desk extends React.Component {
     }
 
     loadPriorityTypes(deskId) {
-        const url = "http://127.0.0.1:8080/api/deskPriorityType"
+        const url = "http://127.0.0.1:8080/api/priorityType"
 
         return new Promise((resolve) => {
             $.ajax({
@@ -244,7 +274,7 @@ export default class Desk extends React.Component {
     }
 
     loadTaskTypes(deskId) {
-        const url = "http://127.0.0.1:8080/api/deskTaskType"
+        const url = "http://127.0.0.1:8080/api/taskType"
 
         return new Promise((resolve) => {
             $.ajax({
@@ -260,6 +290,31 @@ export default class Desk extends React.Component {
                 },
                 success: result => {
                     return resolve(result)
+                },
+                error: function (error) {
+                    console.log('Error ' + error)
+                }
+            })
+        })
+    }
+
+    loadDesk(deskId) {
+        const url = "http://127.0.0.1:8080/api/desks/get"
+        return new Promise((resolve) => {
+            $.ajax({
+                url: url,
+                headers: {
+                    'Access-Control-Allow-Origin': '*',
+                    'firebase_token': localStorage.token
+                },
+                type: "Get",
+                data: {
+                    "deskId": deskId
+                },
+                success: result => {
+                    if (result != null) {
+                        return resolve(result)
+                    }
                 },
                 error: function (error) {
                     console.log('Error ' + error)
@@ -414,7 +469,7 @@ export default class Desk extends React.Component {
     }
 
     createStatusPromise() {
-        const url = "http://127.0.0.1:8080/api/deskTaskStatus/create"
+        const url = "http://127.0.0.1:8080/api/taskStatus/create"
 
         return new Promise((resolve) => {
             $.ajax({
@@ -455,7 +510,7 @@ export default class Desk extends React.Component {
     }
 
     editStatusPromise() {
-        const url = "http://127.0.0.1:8080/api/deskTaskStatus/edit"
+        const url = "http://127.0.0.1:8080/api/taskStatus/edit"
 
         return new Promise((resolve) => {
             $.ajax({
@@ -492,7 +547,7 @@ export default class Desk extends React.Component {
     }
 
     deleteStatusPromise(statusId) {
-        const url = "http://127.0.0.1:8080/api/deskTaskStatus"
+        const url = "http://127.0.0.1:8080/api/taskStatus"
 
         return new Promise((resolve) => {
             $.ajax({
@@ -525,7 +580,20 @@ export default class Desk extends React.Component {
         return (
             <div className="tasks">
                 <Container fluid>
-                    <h2 className="text-center mb-4">Tasks</h2>
+                    <div className="row">
+                        <div className="col-sm-10">
+                            <h2 className="text-center">{this.deskName}</h2>
+                        </div>
+
+                        <div className="col-sm">
+                            <Button className="btn btn-secondary al-r ms-2" onClick={this.showModalTypes}>
+                                Types
+                            </Button>
+                            <Button className="btn btn-secondary al-r" onClick={this.showModalPriorities}>
+                                Priorities
+                            </Button>
+                        </div>
+                    </div>
                     {this.error && <Alert variant="danger">{this.error}</Alert>}
                     <CardGroup>
                         {this.state.statusColumns}
@@ -540,13 +608,13 @@ export default class Desk extends React.Component {
                                          statusRef={this.state.modalCreateTaskStatus}
 
                                          taskPriorityRef={(input) => this.state.modalCreateTaskPriorityType = input}
-                                         priorityTypes={this.state.priorityTypes}
+                                         priorityTypes={this.state.priorityTypes}//todo make this dynamic
                                          taskPriorityCallback={(priorityType) => (
                                              <option value={priorityType.id}>{priorityType.name}</option>
                                          )}
 
                                          taskTypeRef={(input) => this.state.modalCreateTaskType = input}
-                                         taskTypes={this.state.taskTypes}
+                                         taskTypes={this.state.taskTypes}//todo make this dynamic
                                          taskTypeCallback={(taskType) => (
                                              <option value={taskType.id}>{taskType.name}</option>
                                          )}
@@ -572,13 +640,13 @@ export default class Desk extends React.Component {
                                        )}
 
                                        taskPriorityRef={(input) => this.state.modalEditTaskPriorityType = input}
-                                       priorityTypes={this.state.priorityTypes}
+                                       priorityTypes={this.state.priorityTypes}//todo make this dynamic
                                        taskPriorityCallback={(priorityType) => (
                                            <option value={priorityType.id}>{priorityType.name}</option>
                                        )}
 
                                        taskTypeRef={(input) => this.state.modalEditTaskType = input}
-                                       taskTypes={this.state.taskTypes}
+                                       taskTypes={this.state.taskTypes}//todo make this dynamic
                                        taskTypeCallback={(taskType) => (
                                            <option value={taskType.id}>{taskType.name}</option>
                                        )}
@@ -588,6 +656,11 @@ export default class Desk extends React.Component {
 
                                        deadlineDateVal={modalEditTaskDeadlineDate}
                                        onChangeDeadlineDate={date => this.setModalEditTaskDeadlineDate(date)}/>
+
+                        <PrioritiesModal show={this.state.modalPrioritiesActive}
+                                         handleClose={this.hideModalPriorities}
+                                         deskId={this.deskId}
+                        />
 
                         <ModalCloseOrSave show={this.state.modalCreateStatusActive}
                                           handleClose={this.hideModalCreateStatus}
