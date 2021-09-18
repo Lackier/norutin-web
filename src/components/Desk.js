@@ -7,6 +7,7 @@ import TaskItem from "../ui-elements/TaskItem"
 import CreateTaskModal from "../ui-elements/CreateTaskModal"
 import EditTaskModal from "../ui-elements/EditTaskModal"
 import PrioritiesModal from "../ui-elements/PrioritiesModal"
+import TaskTypesModal from "../ui-elements/TaskTypesModal";
 import {BsPlus, BsX, BsPencil} from "react-icons/bs";
 
 export default class Desk extends React.Component {
@@ -22,7 +23,7 @@ export default class Desk extends React.Component {
             tasks: [],
 
             modalPrioritiesActive: false,
-            modalTypesActive: false,
+            modalTaskTypesActive: false,
 
             modalCreateStatusActive: false,
             modalCreateStatusName: "",
@@ -122,8 +123,11 @@ export default class Desk extends React.Component {
         this.loadPage()
     }
 
-    showModalTypes = () => this.setState({showModalTypes: true})
-    hideModalTypes = () => this.setState({showModalTypes: false})
+    showModalTypes = () => this.setState({modalTaskTypesActive: true})
+    hideModalTaskTypes = () => {
+        this.setState({modalTaskTypesActive: false})
+        this.loadPage()
+    }
 
     showModalCreateStatus = () => this.setState({modalCreateStatusActive: true})
     setModalCreateStatusName = (text) => this.setState({modalCreateStatusName: text})
@@ -536,11 +540,6 @@ export default class Desk extends React.Component {
     }
 
     deleteStatus(statusId) {
-        if (this.state.tasks.filter(task => task.statusId === statusId).length !== 0) {
-            alert("Cannot delete status with existing tasks! First delete tasks or move them to another status.")
-            return
-        }
-
         this.deleteStatusPromise(statusId).then(() => {
             this.loadPage()
         })
@@ -565,6 +564,7 @@ export default class Desk extends React.Component {
                     return resolve(result)
                 },
                 error: function (error) {
+                    alert("Cannot delete status with existing tasks! First delete tasks or move them to another status.")
                     console.log('Error ' + error)
                 }
             })
@@ -660,6 +660,11 @@ export default class Desk extends React.Component {
                         <PrioritiesModal show={this.state.modalPrioritiesActive}
                                          handleClose={this.hideModalPriorities}
                                          deskId={this.deskId}
+                        />
+
+                        <TaskTypesModal show={this.state.modalTaskTypesActive}
+                                        handleClose={this.hideModalTaskTypes}
+                                        deskId={this.deskId}
                         />
 
                         <ModalCloseOrSave show={this.state.modalCreateStatusActive}

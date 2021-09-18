@@ -219,7 +219,7 @@ export default function DeskList() {
     return (
         <div className="auth-inner">
         <Container fluid>
-            <h2 className="text-center mb-4">Desks</h2>
+            <h2 className="text-center mb-4">Доски</h2>
             {error && <Alert variant="danger">{error}</Alert>}
             {desks.map((desk, index) => (
                 <Card>

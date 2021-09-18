@@ -6,7 +6,7 @@ import {Button, ListGroup} from "react-bootstrap";
 import {BsPlus, BsX} from "react-icons/bs";
 import {CgCheck} from "react-icons/cg";
 
-export default class PrioritiesModal extends React.Component {
+export default class TaskTypesModal extends React.Component {
     constructor(props) {
         super(props)
 
@@ -14,7 +14,6 @@ export default class PrioritiesModal extends React.Component {
             deskId: props.deskId,
             rows: [],
             show: props.show,
-            items: {},
             showCreate: false,
             newText: ""
         }
@@ -30,8 +29,8 @@ export default class PrioritiesModal extends React.Component {
         this.load(this.state.deskId).then(output => {
             const rows = []
 
-            output.forEach(priority => {
-                rows.push(this.createRow(priority))
+            output.forEach(taskType => {
+                rows.push(this.createRow(taskType))
             })
 
             this.setRows(rows)
@@ -39,7 +38,7 @@ export default class PrioritiesModal extends React.Component {
     }
 
     load(deskId) {
-        const url = "http://127.0.0.1:8080/api/priorityType"
+        const url = "http://127.0.0.1:8080/api/taskType"
 
         return new Promise((resolve) => {
             $.ajax({
@@ -63,37 +62,29 @@ export default class PrioritiesModal extends React.Component {
         })
     }
 
-    createRow(priority) {
-        /*return <div className="w-auto">
-            <ListGroup.Item onClick={() => this.openedit(priority)}>{priority.name}</ListGroup.Item>
-        </div>*///todo uncomment when there will be a solution to normal editing
-
+    createRow(taskType) {
         return <div className="w-auto">
-            <input onChange={event => this.edit(event, priority)} value={priority.name}/>
-            <Button variant="outline-danger inline al-r" onClick={event => this.delete(event, priority)}>
+            <input onChange={event => this.edit(event, taskType)} value={taskType.name}/>
+            <Button variant="outline-danger inline al-r" onClick={event => this.delete(event, taskType)}>
                 <BsX/>
             </Button>
         </div>
     }
 
-    /*openedit(priority) {
-
-    }*/
-
-    edit(event, priority) {
-        this.editPromise(priority.id, event.target.value).then(() => {
+    edit(event, taskType) {
+        this.editPromise(taskType.id, event.target.value).then(() => {
             this.loadPage()
         })
     }
 
-    delete(event, priority) {
-        this.deletePromise(priority.id).then(() => {
+    delete(event, taskType) {
+        this.deletePromise(taskType.id).then(() => {
             this.loadPage()
         })
     }
 
     deletePromise(id) {
-        const url = "http://127.0.0.1:8080/api/priorityType"
+        const url = "http://127.0.0.1:8080/api/taskType"
 
         return new Promise((resolve) => {
             $.ajax({
@@ -111,7 +102,7 @@ export default class PrioritiesModal extends React.Component {
                     return resolve(result)
                 },
                 error: function (error) {
-                    alert("Cannot delete priority with existing tasks! First delete tasks or change their priority.")
+                    alert("Cannot delete task status with existing tasks! First delete tasks or change their task status.")
                     console.log('Error ' + error)
                 }
             })
@@ -119,7 +110,7 @@ export default class PrioritiesModal extends React.Component {
     }
 
     editPromise(id, name) {
-        const url = "http://127.0.0.1:8080/api/priorityType/edit"
+        const url = "http://127.0.0.1:8080/api/taskType/edit"
 
         return new Promise((resolve) => {
             $.ajax({
@@ -152,7 +143,7 @@ export default class PrioritiesModal extends React.Component {
     }
 
     createPromise(name, deskId) {
-        const url = "http://127.0.0.1:8080/api/priorityType/create"
+        const url = "http://127.0.0.1:8080/api/taskType/create"
 
         return new Promise((resolve) => {
             $.ajax({
@@ -180,7 +171,7 @@ export default class PrioritiesModal extends React.Component {
     render() {
         return <ModalInnerEditOrClose show={this.props.show}
                                       handleClose={this.props.handleClose}>
-            <h3>Priorities</h3>
+            <h3>Types</h3>
             <ListGroup variant="flush">
                 {this.state.rows}
                 <center>
@@ -206,7 +197,7 @@ export default class PrioritiesModal extends React.Component {
     }
 }
 
-PrioritiesModal.propTypes = {
+TaskTypesModal.propTypes = {
     show: PropTypes.bool,
     handleClose: PropTypes.func,
     deskId: PropTypes.any
