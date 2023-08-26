@@ -7,7 +7,7 @@ import $ from "jquery";
 export default function Dashboard() {
     const [error, setError] = useState("")
     const [loading, setLoading] = useState(false)
-    const {currentUser, logout} = useAuth()
+    const {currentUser, logout, setToken, setCurrentUser} = useAuth()
     const history = useHistory()
 
     async function handleLogout() {
@@ -15,8 +15,6 @@ export default function Dashboard() {
 
         try {
             await logout()
-            await localStorage.setItem('token', null)
-            history.push("/login")
         } catch {
             setError("Failed to log out")
         }

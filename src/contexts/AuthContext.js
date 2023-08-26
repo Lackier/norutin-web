@@ -75,7 +75,34 @@ export function AuthProvider({children}) {
     }
 
     function logout() {
-        //return auth.signOut()
+        const url = "http://127.0.0.1:8080/api/users/logout"
+
+                return new Promise((resolve) => {
+                    $.ajax({
+                        url: url,
+                        async: true,
+                        contentType: "application/json",
+                        headers: {
+                            'Access-Control-Allow-Origin': '*',
+                            'Authorization': 'Bearer ' + localStorage.token
+                        },
+                        type: "Post",
+                        dataType: "json",
+                        success: result => {
+                            localStorage.setItem('token', null)
+                            setToken(null)
+                            setCurrentUser(null)
+                            history.push("/login")
+                        },
+                        error: function (error) {
+                            console.log('Error ' + error)
+                            localStorage.setItem('token', null)
+                            setToken(null)
+                            setCurrentUser(null)
+                            history.push("/login")
+                        }
+                    })
+                })
     }
 
     function resetPassword(email) {
@@ -98,7 +125,8 @@ export function AuthProvider({children}) {
     const value = {
         currentUser,
         login,
-        signup
+        signup,
+        logout
     }
 
     return (
