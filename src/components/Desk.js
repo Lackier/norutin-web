@@ -236,7 +236,7 @@ export default class Desk extends React.Component {
                 async: true,
                 headers: {
                     'Access-Control-Allow-Origin': '*',
-                    'firebase_token': localStorage.token
+                    'Authorization': 'Bearer ' + localStorage.token
                 },
                 type: "Get",
                 data: {
@@ -261,7 +261,7 @@ export default class Desk extends React.Component {
                 async: true,
                 headers: {
                     'Access-Control-Allow-Origin': '*',
-                    'firebase_token': localStorage.token
+                    'Authorization': 'Bearer ' + localStorage.token
                 },
                 type: "Get",
                 data: {
@@ -286,7 +286,7 @@ export default class Desk extends React.Component {
                 async: true,
                 headers: {
                     'Access-Control-Allow-Origin': '*',
-                    'firebase_token': localStorage.token
+                    'Authorization': 'Bearer ' + localStorage.token
                 },
                 type: "Get",
                 data: {
@@ -309,7 +309,7 @@ export default class Desk extends React.Component {
                 url: url,
                 headers: {
                     'Access-Control-Allow-Origin': '*',
-                    'firebase_token': localStorage.token
+                    'Authorization': 'Bearer ' + localStorage.token
                 },
                 type: "Get",
                 data: {
@@ -334,7 +334,7 @@ export default class Desk extends React.Component {
                 url: url,
                 headers: {
                     'Access-Control-Allow-Origin': '*',
-                    'firebase_token': localStorage.token
+                    'Authorization': 'Bearer ' + localStorage.token
                 },
                 type: "Get",
                 data: {
@@ -368,7 +368,7 @@ export default class Desk extends React.Component {
                 async: true,
                 headers: {
                     'Access-Control-Allow-Origin': '*',
-                    'firebase_token': localStorage.token
+                    'Authorization': 'Bearer ' + localStorage.token
                 },
                 type: "Post",
                 data: {
@@ -410,7 +410,7 @@ export default class Desk extends React.Component {
                 async: true,
                 headers: {
                     'Access-Control-Allow-Origin': '*',
-                    'firebase_token': localStorage.token
+                    'Authorization': 'Bearer ' + localStorage.token
                 },
                 type: "Post",
                 data: {
@@ -448,7 +448,7 @@ export default class Desk extends React.Component {
                 async: true,
                 headers: {
                     'Access-Control-Allow-Origin': '*',
-                    'firebase_token': localStorage.token
+                    'Authorization': 'Bearer ' + localStorage.token
                 },
                 type: "Delete",
                 data: {
@@ -481,7 +481,7 @@ export default class Desk extends React.Component {
                 async: true,
                 headers: {
                     'Access-Control-Allow-Origin': '*',
-                    'firebase_token': localStorage.token
+                    'Authorization': 'Bearer ' + localStorage.token
                 },
                 type: "Post",
                 data: {
@@ -522,7 +522,7 @@ export default class Desk extends React.Component {
                 async: true,
                 headers: {
                     'Access-Control-Allow-Origin': '*',
-                    'firebase_token': localStorage.token
+                    'Authorization': 'Bearer ' + localStorage.token
                 },
                 type: "Post",
                 data: {
@@ -554,7 +554,7 @@ export default class Desk extends React.Component {
                 async: true,
                 headers: {
                     'Access-Control-Allow-Origin': '*',
-                    'firebase_token': localStorage.token
+                    'Authorization': 'Bearer ' + localStorage.token
                 },
                 type: "Delete",
                 data: {

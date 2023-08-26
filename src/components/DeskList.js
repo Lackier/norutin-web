@@ -67,7 +67,7 @@ export default function DeskList() {
                 url: url,
                 headers: {
                     'Access-Control-Allow-Origin': '*',
-                    'firebase_token': localStorage.token
+                    'Authorization': 'Bearer ' + localStorage.token
                 },
                 type: "Get",
                 data: {
@@ -98,7 +98,7 @@ export default function DeskList() {
                 url: url,
                 headers: {
                     'Access-Control-Allow-Origin': '*',
-                    'firebase_token': localStorage.token
+                    'Authorization': 'Bearer ' + localStorage.token
                 },
                 type: "Post",
                 data: {
@@ -131,7 +131,7 @@ export default function DeskList() {
                 url: url,
                 headers: {
                     'Access-Control-Allow-Origin': '*',
-                    'firebase_token': localStorage.token
+                    'Authorization': 'Bearer ' + localStorage.token
                 },
                 type: "Post",
                 data: {
@@ -168,7 +168,7 @@ export default function DeskList() {
                 url: url,
                 headers: {
                     'Access-Control-Allow-Origin': '*',
-                    'firebase_token': localStorage.token
+                    'Authorization': 'Bearer ' + localStorage.token
                 },
                 type: "Get",
                 success: function (result) {
@@ -192,7 +192,7 @@ export default function DeskList() {
                 url: url,
                 headers: {
                     'Access-Control-Allow-Origin': '*',
-                    'firebase_token': localStorage.token
+                    'Authorization': 'Bearer ' + localStorage.token
                 },
                 type: "Delete",
                 data: {

@@ -13,15 +13,15 @@ export default function Signup() {
     const passwordConfirmRef = useRef()
     const {login} = useAuth()
     const [token, setToken] = useState(null)
-    const [phoneNumberRef, setPhoneNumber] = useState()
+    const [phoneRef, setPhone] = useState()
     const [error, setError] = useState("")
     const [loading, setLoading] = useState(false)
     const history = useHistory()
-    let model = {name: "", phoneNumber: "", email: "", password: ""}
+    let model = {name: "", phone: "", email: "", password: ""}
 
     function setModel() {
         model.name = nameRef.current.value
-        model.phoneNumber = phoneNumberRef
+        model.phone = phoneRef
         model.email = emailRef.current.value
         model.password = passwordRef.current.value
     }
@@ -32,7 +32,7 @@ export default function Signup() {
         }
 
         setModel()
-        if (model.name === "" || model.phoneNumber === "" || model.email === "" || model.password === "") {
+        if (model.name === "" || model.phone === "" || model.email === "" || model.password === "") {
             setLoading(false)
             return
         }
@@ -41,18 +41,21 @@ export default function Signup() {
             const url = "http://127.0.0.1:8080/api/users/signup"
             $.ajax({
                 url: url,
+                async: true,
+                contentType: "application/json",
                 headers: {
                     'Access-Control-Allow-Origin': '*'
                 },
                 type: "Post",
-                data: {
-                    "name": model.name,
-                    "phoneNumber": model.phoneNumber,
+                dataType: "json",
+                data: JSON.stringify({
+                    "username": model.email,
+                    "phone": model.phone,
                     "email": model.email,
                     "password": model.password
-                },
-                success: async function () {
-                    await toLogin()
+                }),
+                success: result => {
+                    return result
                 },
                 error: function (error) {
                     console.log('Error ' + error)
@@ -89,15 +92,15 @@ export default function Signup() {
                     <Form.Control type="text" ref={nameRef} required/>
                 </Form.Group>
 
-                <Form.Group id="phoneNumber" className="form-group">
+                <Form.Group id="phone" className="form-group">
                     <Form.Label>Phone Number</Form.Label>
                     <PhoneInput international
                                 defaultCountry="RU"
                                 placeholder="Enter phone number"
                                 className="input-group-text form-group"
-                                value={phoneNumberRef}
+                                value={phoneRef}
                                 required
-                                onChange={setPhoneNumber}/>
+                                onChange={setPhone}/>
                 </Form.Group>
 
                 <Form.Group id="email" className="form-group">

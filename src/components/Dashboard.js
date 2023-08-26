@@ -32,7 +32,7 @@ export default function Dashboard() {
                 url: url,
                 headers: {
                     'Access-Control-Allow-Origin': '*',
-                    'firebase_token': localStorage.token
+                    'Authorization': 'Bearer ' + localStorage.token
                 },
                 type: "Get",
                 success: function (result) {

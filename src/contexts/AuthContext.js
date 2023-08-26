@@ -1,5 +1,6 @@
-import React, { useContext, useState, useEffect } from "react"
-import { auth } from "../firebase"
+import React, {useContext, useEffect, useState} from "react"
+import $ from "jquery";
+import {useHistory} from "react-router-dom"
 
 const AuthContext = React.createContext()
 
@@ -7,51 +8,97 @@ export function useAuth() {
     return useContext(AuthContext)
 }
 
-export function AuthProvider({ children }) {
+export function AuthProvider({children}) {
     const [currentUser, setCurrentUser] = useState()
     const [loading, setLoading] = useState(true)
+    const [token, setToken] = useState(null)
+    const history = useHistory()
 
-    function signup(email, password) {
-        return auth.createUserWithEmailAndPassword(email, password)
+    function signup(username, email, password, phone) {
+        const url = "http://127.0.0.1:8080/api/users/signup"
+
+        return new Promise((resolve) => {
+            $.ajax({
+                url: url,
+                async: true,
+                contentType: "application/json",
+                headers: {
+                    'Access-Control-Allow-Origin': '*'
+                },
+                type: "Post",
+                dataType: "json",
+                data: JSON.stringify({
+                    "username": username,
+                    "email": email,
+                    "phone": phone,
+                    "password": password
+                }),
+                success: result => {
+                    return result
+                },
+                error: function (error) {
+                    console.log('Error ' + error)
+                }
+            })
+        })
     }
 
     function login(email, password) {
-        return auth.signInWithEmailAndPassword(email, password)
+        const url = "http://127.0.0.1:8080/api/users/login"
+
+        return new Promise((resolve) => {
+            $.ajax({
+                url: url,
+                async: true,
+                contentType: "application/json",
+                headers: {
+                    'Access-Control-Allow-Origin': '*'
+                },
+                type: "Post",
+                dataType: "json",
+                data: JSON.stringify({
+                    "username": email,
+                    "password": password
+                }),
+                success: result => {
+                    const token = result.token
+                    localStorage.setItem('token', token)
+                    setToken(window.localStorage.token)
+                    setCurrentUser(result.user)
+                    history.push("/")
+                },
+                error: function (error) {
+                    console.log('Error ' + error)
+                }
+            })
+        })
     }
 
     function logout() {
-        return auth.signOut()
+        //return auth.signOut()
     }
 
     function resetPassword(email) {
-        return auth.sendPasswordResetEmail(email)
+        //return auth.sendPasswordResetEmail(email)
     }
 
     function updateEmail(email) {
-        return currentUser.updateEmail(email)
+        //return currentUser.updateEmail(email)
     }
 
     function updatePassword(password) {
-        return currentUser.updatePassword(password)
+        //return currentUser.updatePassword(password)
     }
 
     useEffect(() => {
-        const unsubscribe = auth.onAuthStateChanged(user => {
-            setCurrentUser(user)
-            setLoading(false)
-        })
-
-        return unsubscribe
+        //setCurrentUser(user)
+        setLoading(false)
     }, [])
 
     const value = {
         currentUser,
         login,
-        signup,
-        logout,
-        resetPassword,
-        updateEmail,
-        updatePassword
+        signup
     }
 
     return (

@@ -24,6 +24,7 @@ export default function Login() {
             setLoading(true)
             await login(emailRef.current.value, passwordRef.current.value)
                 .then(async res => {
+                    debugger;
                     const token = await Object.entries(res.user)[5][1].b
                     await localStorage.setItem('token', token)
                     setToken(window.localStorage.token)
