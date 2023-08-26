@@ -24,6 +24,7 @@ export default function Login() {
             setLoading(true)
             await login(emailRef.current.value, passwordRef.current.value)
                 .then(async res => {
+                    debugger;
                     const token = await Object.entries(res.user)[5][1].b
                     await localStorage.setItem('token', token)
                     setToken(window.localStorage.token)
@@ -37,8 +38,8 @@ export default function Login() {
     }
 
     return (
-        <Form>
-            <h3>Sign In</h3>
+        <Form className="auth-inner">
+            <h2 className="text-center mb-4">Sign In</h2>
             {error && <Alert variant="danger">{error}</Alert>}
             <Form onSubmit={handleSubmit}>
                 <Form.Group id="email" className="form-group">
@@ -56,10 +57,6 @@ export default function Login() {
                             onClick={handleSubmit}>
                         Log In
                     </Button>
-
-                    <div className="btn btn-block">
-                        <Link to="/forgot-password">Forgot Password?</Link>
-                    </div>
                 </ButtonGroup>
             </Form>
 

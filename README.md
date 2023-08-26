@@ -4,7 +4,6 @@ Front-end project for NORUTIN application
 The project uses:
 - React
 - bootstrap library
-- Firebase to authenticate the user
 
 To develop run:
 -npm install

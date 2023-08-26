@@ -43,6 +43,16 @@ body, html, .App, #root, .auth-wrapper {
     transition: all .3s;
 }
 
+.tasks {
+    width: 100%;
+    margin: auto;
+    background: #ffffff;
+    box-shadow: 0px 14px 80px rgba(34, 35, 58, 0.2);
+    padding: 40px 55px 45px 55px;
+    border-radius: 15px;
+    transition: all .3s;
+}
+
 .auth-wrapper .form-control:focus {
     border-color: #167bff;
     box-shadow: none;
@@ -83,4 +93,31 @@ body, html, .App, #root, .auth-wrapper {
 
 .w-12 {
     width: 12.5%;
+}
+
+.w-150-250 {
+    min-width: 150px;
+    width: 200px;
+    max-width: 250px;
+}
+
+.task {
+    padding: 3px 3px 3px 3px;
+    border-radius: 6px;
+    transition: all .3s;
+    background-color: #ffffff;
+    border: 1px solid #167bff;
+    flex: 1;
+}
+
+.ms-6 {
+    margin-left:3.5rem!important
+}
+
+.w-18 {
+    width: 18%;
+}
+
+.al-r {
+    float: right;
 }
