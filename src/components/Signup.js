@@ -82,6 +82,14 @@ export default function Signup() {
             })
     }
 
+    const handlePhoneChange = (value) => {
+        if (value.length <= 12) {
+            setPhone(value);
+        } else {
+            setPhone(value.slice(0, 12))
+        }
+      };
+
     return (
         <div className="auth-inner">
             <h2 className="text-center mb-4">Sign Up</h2>
@@ -95,12 +103,11 @@ export default function Signup() {
                 <Form.Group id="phone" className="form-group">
                     <Form.Label>Phone Number</Form.Label>
                     <PhoneInput international
-                                defaultCountry="RU"
                                 placeholder="Enter phone number"
                                 className="input-group-text form-group"
                                 value={phoneRef}
-                                required
-                                onChange={setPhone}/>
+                                onChange={handlePhoneChange}
+                                required/>
                 </Form.Group>
 
                 <Form.Group id="email" className="form-group">
