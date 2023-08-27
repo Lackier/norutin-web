@@ -8,7 +8,7 @@ import {useAuth} from "../contexts/AuthContext";
 
 export default function Signup() {
     const emailRef = useRef()
-    const nameRef = useRef()
+    const usernameRef = useRef()
     const passwordRef = useRef()
     const passwordConfirmRef = useRef()
     const {login} = useAuth()
@@ -20,7 +20,7 @@ export default function Signup() {
     let model = {name: "", phone: "", email: "", password: ""}
 
     function setModel() {
-        model.name = nameRef.current.value
+        model.username = usernameRef.current.value
         model.phone = phoneRef
         model.email = emailRef.current.value
         model.password = passwordRef.current.value
@@ -32,7 +32,7 @@ export default function Signup() {
         }
 
         setModel()
-        if (model.name === "" || model.phone === "" || model.email === "" || model.password === "") {
+        if (model.username === "" || model.phone === "" || model.email === "" || model.password === "") {
             setLoading(false)
             return
         }
@@ -49,7 +49,7 @@ export default function Signup() {
                 type: "Post",
                 dataType: "json",
                 data: JSON.stringify({
-                    "username": model.email,
+                    "username": model.username,
                     "phone": model.phone,
                     "email": model.email,
                     "password": model.password
@@ -89,7 +89,7 @@ export default function Signup() {
             <Form onSubmit={handleSubmit}>
                 <Form.Group id="name" className="form-group">
                     <Form.Label>Name</Form.Label>
-                    <Form.Control type="text" ref={nameRef} required/>
+                    <Form.Control type="text" ref={usernameRef} required/>
                 </Form.Group>
 
                 <Form.Group id="phone" className="form-group">
