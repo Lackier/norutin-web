@@ -40,6 +40,7 @@ export default class Desk extends React.Component {
             modalCreateTaskType: {value: null},
             modalCreateTaskDescription: {current: {value: ""}},
             modalCreateTaskDeadlineDate: Date(),
+            modalCreateTaskNoDeadline: false,
 
             modalEditTaskId: null,
             modalEditTaskActive: false,
@@ -48,7 +49,9 @@ export default class Desk extends React.Component {
             modalEditTaskPriorityType: {value: null},
             modalEditTaskType: {value: null},
             modalEditTaskDescription: {current: {value: ""}},
-            modalEditTaskDeadlineDate: null
+            modalEditTaskDeadlineDateConst: null,
+            modalEditTaskDeadlineDate: null,
+            modalEditTaskNoDeadline: false
         }
 
         this.createTask = this.createTask.bind(this)
@@ -73,7 +76,8 @@ export default class Desk extends React.Component {
         this.setState({modalCreateTaskActive: true})
         this.state.modalCreateTaskPriorityType.value = null
         this.state.modalCreateTaskType.value = null
-        this.setModalCreateTaskDeadlineDate(Date())
+        this.state.modalCreateTaskDeadlineDate = Date()
+        this.state.modalEditTaskNoDeadline = false
     }
     clearCreateTaskModal = () => {
         this.setState({modalCreateTaskStatusId: null})
@@ -89,7 +93,18 @@ export default class Desk extends React.Component {
     }
     setModalCreateTaskName = (text) => this.setState({modalCreateTaskName: text})
     setModalCreateTaskDescription = (text) => this.setState({modalCreateTaskDescription: text})
-    setModalCreateTaskDeadlineDate = (date) => this.setState({modalCreateTaskDeadlineDate: date})
+    setModalCreateTaskDeadlineDate = (date) => {
+        this.setState({modalCreateTaskDeadlineDate: date})
+        this.setState({modalCreateTaskNoDeadline : false})
+    }
+    setModalCreateTaskNoDeadline = (val) => {
+            if (!val.target.checked) {
+                this.setState({modalCreateTaskDeadlineDate: Date()})
+            } else {
+                this.setState({modalCreateTaskDeadlineDate: null})
+            }
+            this.setState({modalCreateTaskNoDeadline : val.target.checked});
+    }
 
     showModalEditTask = (task) => {
         this.setState({modalEditTaskActive: true})
@@ -99,7 +114,9 @@ export default class Desk extends React.Component {
         this.state.modalEditTaskPriorityType.value = task.priorityId
         this.state.modalEditTaskType.value = task.typeId
         this.state.modalEditTaskDescription.current.value = task.description
-        this.setModalEditTaskDeadlineDate(task.doneDate)
+        this.state.modalEditTaskDeadlineDate = task.doneDate
+        this.state.modalEditTaskDeadlineDateConst = task.doneDate
+        this.state.modalEditTaskNoDeadline = task.doneDate == null
     }
     clearEditTaskModal = () => {
         this.state.modalEditTaskId = null
@@ -115,7 +132,22 @@ export default class Desk extends React.Component {
     }
     setModalEditTaskName = (text) => this.setState({modalEditTaskName: text})
     setModalEditTaskDescription = (text) => this.setState({modalEditTaskDescription: text})
-    setModalEditTaskDeadlineDate = (date) => this.setState({modalEditTaskDeadlineDate: date})
+    setModalEditTaskDeadlineDate = (date) => {
+        this.setState({modalEditTaskDeadlineDate: date})
+        this.setState({modalEditTaskNoDeadline : false})
+    }
+    setModalEditTaskNoDeadline = (val, constDeadlineDate) => {
+        if (!val.target.checked) {
+            if (constDeadlineDate != null) {
+                this.setState({modalEditTaskDeadlineDate: constDeadlineDate})
+            } else {
+                this.setState({modalEditTaskDeadlineDate: new Date()})
+            }
+        } else {
+            this.setState({modalEditTaskDeadlineDate: null})
+        }
+        this.setState({modalEditTaskNoDeadline : val.target.checked})
+    }
 
     showModalPriorities = () => this.setState({modalPrioritiesActive: true})
     hideModalPriorities = () => {
@@ -362,6 +394,19 @@ export default class Desk extends React.Component {
     createTaskPromise() {
         const url = "http://127.0.0.1:8080/api/tasks/create"
 
+        const data = {
+            "deskId": this.deskId,
+            "name": this.state.modalCreateTaskName.current.value,
+            "statusId": this.state.modalCreateTaskStatusId,
+            "priorityId": this.state.modalCreateTaskPriorityType.value,
+            "typeId": this.state.modalCreateTaskType.value,
+            "description": this.state.modalCreateTaskDescription.current.value,
+          };
+
+          if (this.state.modalCreateTaskDeadlineDate !== null) {
+            data["doneDate"] = this.state.modalCreateTaskDeadlineDate;
+          }
+
         return new Promise((resolve) => {
             $.ajax({
                 url: url,
@@ -371,15 +416,7 @@ export default class Desk extends React.Component {
                     'Authorization': 'Bearer ' + localStorage.token
                 },
                 type: "Post",
-                data: {
-                    "deskId": this.deskId,
-                    "name": this.state.modalCreateTaskName.current.value,
-                    "statusId": this.state.modalCreateTaskStatusId,
-                    "priorityId": this.state.modalCreateTaskPriorityType.value,
-                    "typeId": this.state.modalCreateTaskType.value,
-                    "description": this.state.modalCreateTaskDescription.current.value,
-                    "doneDate": this.state.modalCreateTaskDeadlineDate
-                },
+                data: data,
                 success: result => {
                     return resolve(result)
                 },
@@ -404,6 +441,19 @@ export default class Desk extends React.Component {
     editTaskPromise() {
         const url = "http://127.0.0.1:8080/api/tasks/edit"
 
+        const data = {
+                    "id": this.state.modalEditTaskId,
+                                        "name": this.state.modalEditTaskName.current.value,
+                                        "statusId": this.state.modalEditTaskStatus.value,
+                                        "priorityId": this.state.modalEditTaskPriorityType.value,
+                                        "typeId": this.state.modalEditTaskType.value,
+                                        "description": this.state.modalEditTaskDescription.current.value
+                  };
+
+                  if (this.state.modalEditTaskDeadlineDate !== null) {
+                    data["doneDate"] = this.state.modalEditTaskDeadlineDate;
+                  }
+
         return new Promise((resolve) => {
             $.ajax({
                 url: url,
@@ -413,15 +463,7 @@ export default class Desk extends React.Component {
                     'Authorization': 'Bearer ' + localStorage.token
                 },
                 type: "Post",
-                data: {
-                    "id": this.state.modalEditTaskId,
-                    "name": this.state.modalEditTaskName.current.value,
-                    "statusId": this.state.modalEditTaskStatus.value,
-                    "priorityId": this.state.modalEditTaskPriorityType.value,
-                    "typeId": this.state.modalEditTaskType.value,
-                    "description": this.state.modalEditTaskDescription.current.value,
-                    "doneDate": new Date(this.state.modalEditTaskDeadlineDate)
-                },
+                data: data,
                 success: result => {
                     return resolve(result)
                 },
@@ -574,7 +616,10 @@ export default class Desk extends React.Component {
     render() {
         const {
             modalCreateTaskDeadlineDate,
-            modalEditTaskDeadlineDate
+            modalCreateTaskNoDeadline,
+            modalEditTaskDeadlineDate,
+            modalEditTaskDeadlineDateConst,
+            modalEditTaskNoDeadline
         } = this.state;
 
         return (
@@ -623,7 +668,11 @@ export default class Desk extends React.Component {
                                          onChangeDescription={text => this.setModalCreateTaskDescription(text)}
 
                                          deadlineDateVal={modalCreateTaskDeadlineDate}
-                                         onChangeDeadlineDate={date => this.setModalCreateTaskDeadlineDate(date)}/>
+                                         onChangeDeadlineDate={date => this.setModalCreateTaskDeadlineDate(date)}
+
+                                         noDeadline={modalCreateTaskNoDeadline}
+                                         handleToggleNoDeadline={val => this.setModalCreateTaskNoDeadline(val)}
+                                         />
 
                         <EditTaskModal show={this.state.modalEditTaskActive}
                                        handleSave={this.editTask}
@@ -655,7 +704,11 @@ export default class Desk extends React.Component {
                                        onChangeDescription={text => this.setModalEditTaskDescription(text)}
 
                                        deadlineDateVal={modalEditTaskDeadlineDate}
-                                       onChangeDeadlineDate={date => this.setModalEditTaskDeadlineDate(date)}/>
+                                       onChangeDeadlineDate={date => this.setModalEditTaskDeadlineDate(date)}
+
+                                       noDeadline={modalEditTaskNoDeadline}
+                                       handleToggleNoDeadline={val => this.setModalEditTaskNoDeadline(val, modalEditTaskDeadlineDateConst)}
+                                       />
 
                         <PrioritiesModal show={this.state.modalPrioritiesActive}
                                          handleClose={this.hideModalPriorities}
