@@ -51,7 +51,11 @@ export default function Dashboard() {
         <div className="auth-inner">
             <h2 className="text-center mb-4">Profile</h2>
             {error && <Alert variant="danger">{error}</Alert>}
+            <strong>Username:</strong> {currentUser.username}
+            <br/>
             <strong>Email:</strong> {currentUser.email}
+            <br/>
+            <strong>Phone:</strong> {currentUser.phone}
             <div className="w-100 text-center mt-2">
                 <Button variant="link" onClick={handleLogout}>
                     Log Out
