@@ -20,21 +20,23 @@ export default function TaskItem({task}) {
                 <div className="col-sm text-primary fw-bold">{task.name}</div>
                 <div className="col-sm">{task.type}</div>
             </div>
-            <div className="row">
-                <div className="col-sm">Priority:</div>
-                <div className="col-sm text-success fw-bold">{task.priority}</div>
-            </div>
+            {task.priority != null &&
+                <div className="row">
+                    <div className="col-sm">Priority:</div>
+                    <div className="col-sm text-success fw-bold">{task.priority}</div>
+                </div>
+            }
             {task.doneDate != null &&
-            <div className="row">
-                <span className="col-sm">Deadline:</span>
-                <span className="col-sm">{formatDate(task.doneDate)}</span>
-            </div>
+                <div className="row">
+                    <span className="col-sm">Deadline:</span>
+                    <span className="col-sm">{formatDate(task.doneDate)}</span>
+                </div>
             }
             {task.commitDate != null &&
-            <div>
-                <p>{formatDate(task.commitDate)}</p>
-                <p>{task.doneOnTime}</p>
-            </div>
+                <div>
+                    <p>{formatDate(task.commitDate)}</p>
+                    <p>{task.doneOnTime}</p>
+                </div>
             }
         </div>
     );

@@ -53,6 +53,16 @@ export default class CreateTaskModal extends React.Component {
                                     onChange={this.props.onChangeDeadlineDate}
                     />
                 </MuiPickersUtilsProvider>
+                <div>
+                        <label>
+                          <input
+                            type="checkbox"
+                            checked={this.props.noDeadline}
+                            onChange={this.props.handleToggleNoDeadline}
+                          />
+                          No deadline
+                        </label>
+                      </div>
             </Form>
         </ModalCloseOrSave>;
     }
@@ -80,5 +90,8 @@ CreateTaskModal.propTypes = {
     onChangeDescription: PropTypes.func,
 
     deadlineDateVal: PropTypes.any,
-    onChangeDeadlineDate: PropTypes.func
+    onChangeDeadlineDate: PropTypes.func,
+
+    noDeadline: PropTypes.any,
+    handleToggleNoDeadline: PropTypes.func
 };
