@@ -77,6 +77,10 @@ export function AuthProvider({children}) {
     function logout() {
         const url = "http://127.0.0.1:8080/api/users/logout"
 
+        if (localStorage.token == "null") {
+            history.push("/login")
+            return
+        }
                 return new Promise((resolve) => {
                     $.ajax({
                         url: url,

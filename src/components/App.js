@@ -4,6 +4,7 @@ import {AuthProvider} from "../contexts/AuthContext"
 import {BrowserRouter as Router, Switch, Route, Link} from "react-router-dom"
 import Dashboard from "./Dashboard"
 import Login from "./Login"
+import Logout from "./Logout"
 import DeskList from "./DeskList"
 import Desk from "./Desk"
 import PrivateRoute from "./PrivateRoute"
@@ -26,6 +27,9 @@ function App() {
                                 <li className="nav-item">
                                     <Link className="nav-link" to={"/signup"}>Sign up</Link>
                                 </li>
+                                <li className="nav-item">
+                                    <Link className="nav-link" to={"/logout"}>Log out</Link>
+                                </li>
                             </ul>
                         </div>
                     </div>
@@ -37,6 +41,7 @@ function App() {
                             <PrivateRoute exact path="/" component={Dashboard}/>
                             <Route path="/signup" component={Signup}/>
                             <Route path="/login" component={Login}/>
+                            <Route path="/logout" component={Logout}/>
                             <PrivateRoute exact path="/desks" component={DeskList}/>
                             <PrivateRoute exact path="/tasks" component={Desk}/>
                         </Switch>
